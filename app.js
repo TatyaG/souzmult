@@ -1,5 +1,5 @@
-
 // Стартовая страница
+let countQuest = 1
 
 function createMain() {
     const header = document.createElement('header');
@@ -35,7 +35,6 @@ function createMain() {
 
     text.innerHTML = `Добро пожаловать в захватывающий мир приключений! <br><br>
     Готовы ли вы окунуться в увлекательный квест, полный загадок и открытий?»`;
-
 
 
     header.append(containerInHeader);
@@ -152,13 +151,12 @@ function createMenu() {
 
 // Экран с вопросом
 
-function createQuestion(num) {
+function createQuestion() {
     const section = document.createElement('section');
     const container = document.createElement('div');
     const containerSection = document.createElement('div');
     const title = document.createElement('h2');
     const text = document.createElement('p');
-    // const img = document.createElement('img');
 
     // Создаем форму с полем ввода ответа и кнопкой Ответить
 
@@ -166,55 +164,82 @@ function createQuestion(num) {
     const input = document.createElement('input');
     const submit = document.createElement('button');
 
+
     // Вызываем функцию, в которой находятся данные вопроса
+    const question = getQuestion(countQuest);
 
-    const question = getQuestion();
+    // Проверяем то лежит в массиве
+    console.log(question)
 
-    // Проверяем кол-во картинок в вопросе
+        //      Есть ли в массиве АУДИО
 
-    if (question.images.length > 1) {
-        const carousel = document.createElement('div');
-        carousel.classList.add('f-carousel');
-        carousel.id = 'myCarousel';
-        question.images.forEach(el => {
-            const carouselItem = document.createElement('div');
-            const img = document.createElement('img');
-            carouselItem.classList.add('f-carousel__slide');
-
-            carouselItem.setAttribute('data-fancybox', 'gallery');
-            carouselItem.setAttribute('data-src', el);
-
-            img.src = el;
-
-            carousel.append(carouselItem);
-            carouselItem.append(img);
+    if (question.audio.length) {
+        let audioWrap = document.createElement('div')
+        let audioElem = document.createElement('audio')
+        audioElem.setAttribute('controls', '')
+        audioElem.addEventListener("canplaythrough", (event) => {
+            audioElem.play();
         });
-
-        const options = { 
-            infinite: false,
-            Dots: {
-                maxCount: 1,
-              },
-        };
-
-        Fancybox.bind("[data-fancybox]", {
-            // Your custom options
-          });
- 
-
-          containerSection.append(carousel);
-
-        new Carousel(carousel, options);
-
+        audioWrap.append(audioElem);
+        containerSection.append(audioWrap)
+        audioElem.src = question.audio[0].URL
     } else {
-        const img = document.createElement('img');
-        img.src = question.images;
-        containerSection.append(img);
+
+        //      Ели в массиве картинок больше 1 то делаем слайдшоу
+
+        if (question.images.length > 1) {
+            const carousel = document.createElement('div');
+            carousel.classList.add('f-carousel');
+            carousel.id = 'myCarousel';
+            question.images.forEach(el => {
+                const carouselItem = document.createElement('div');
+                const img = document.createElement('img');
+                carouselItem.classList.add('f-carousel__slide');
+
+                carouselItem.setAttribute('data-fancybox', 'gallery');
+                carouselItem.setAttribute('data-src', el);
+
+                img.src = el.path;
+
+                carousel.append(carouselItem);
+                carouselItem.append(img);
+            });
+
+            const options = {
+                infinite: false,
+                Dots: {
+                    maxCount: 1,
+                },
+            };
+
+            Fancybox.bind("[data-fancybox]", {
+                // Your custom options
+            });
+
+
+            containerSection.append(carousel);
+
+            new Carousel(carousel, options);
+
+        }
+
+        //      Если одна картинка в массиве то просто выводим ее
+
+        else if (question.images.length === 1) {
+            const img = document.createElement('img');
+            img.src = question.images[0].path;
+            containerSection.append(img);
+        }
+
+        //      Есть ли в массиве видео
+
+        else if (question.video.length > 1) {
+            const video = document.createElement('video')
+            video.src = question.video[0].URL
+            containerSection.append(video)
+        }
     }
-
-
     submit.textContent = 'Ответить';
-
 
     section.classList.add('question', 'section');
     container.classList.add('container');
@@ -223,7 +248,7 @@ function createQuestion(num) {
     submit.classList.add('form__btn', 'btn-reset', 'button');
     containerSection.classList.add('section__container');
 
-    title.textContent = `Вопрос ${num} из 10`;
+    title.textContent = `Вопрос ${countQuest} из 10`;
     text.textContent = question.text;
 
 
@@ -238,7 +263,7 @@ function createQuestion(num) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         document.querySelector('.main').innerHTML = '';
-        document.querySelector('.main').append(createSuccess(num));
+        document.querySelector('.main').append(createSuccess(countQuest));
     })
 
     return section;
@@ -246,7 +271,7 @@ function createQuestion(num) {
 
 // Экран, если ответ положительный
 
-function createSuccess(num) {
+function createSuccess() {
     const container = document.createElement('div');
     const containerSection = document.createElement('div');
     const section = document.createElement('section');
@@ -263,7 +288,7 @@ function createSuccess(num) {
     nextBtn.classList.add('btn-reset', 'button');
     containerSection.classList.add('section__container');
 
-    text.textContent = `Ты молодец. Ответил правильно. Давай пойдём на локацию ${num + 1}`;
+    text.textContent = `Ты молодец. Ответил правильно. Давай пойдём на локацию ${countQuest + 1}`;
     nextBtn.textContent = 'Следующий вопрос';
 
     section.append(container);
@@ -274,24 +299,170 @@ function createSuccess(num) {
     nextBtn.addEventListener('click', (e) => {
         e.preventDefault();
         document.querySelector('.main').innerHTML = '';
-        document.querySelector('.main').append(createQuestion(num + 1));
+        document.querySelector('.main').append(createQuestion(countQuest++));
     })
-
     return section;
 
 }
 
-
 // Функция, которая будет запрашивать данные вопроса
 
-function getQuestion() {
-    const images = ['img/illustration.jpg', 'img/illustration.jpg', 'img/illustration.jpg'];
-    const text = 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды ?';
+function getQuestion(num) {
+    let currentQuest = {}
+    questDB.find((el, index) => {
+        if (el.id === num) {
+            currentQuest = el
+        }
+    })
+    return currentQuest
 
-    return {
-        images,
-        text
-    }
 }
+
+const questDB = [
+    {
+        id: 1,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [
+            {name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        video: [
+            {name: 'video1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 2,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [],
+        audio: [],
+        video: [
+            {name: 'video2', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 3,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды?',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video3', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 4,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [],
+        audio: [
+            {name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        video: [
+            {name: 'video4', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 5,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video5', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 6,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video6', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 7,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video7', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 8,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video8', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 9,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.' ,
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video9', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+    {
+        id: 10,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
+        images: [
+            {name: 'image1', path: 'img/illustration.jpg'},
+            {name: 'image2', path: 'img/illustration.jpg'},
+            {name: 'image3', path: 'img/illustration.jpg'},
+            {name: 'image4', path: 'img/illustration.jpg'},
+        ],
+        audio: [],
+        video: [
+            {name: 'video10', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+        ],
+        answers:{}
+    },
+]
 
 createMain();
