@@ -112,8 +112,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 45px;
-    background: url(img/start-background.webp) no-repeat bottom / 100%, linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%);
+    /* background: url(img/bg-desktop.webp) no-repeat bottom / 100% 330px, url(img/illiustration.svg) no-repeat 50% 100px, linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%); */
+    background: linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%);
     height: 100vh;
+}
+
+.svg-block {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 .rules-body {
@@ -128,7 +135,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: end;
-    background-color: var(--green);
+    background: url(img/clouds.webp) no-repeat top var(--green);
+    background-size: contain;
 }
 
 .start-body main {
@@ -245,6 +253,9 @@ body {
 
 .section__container {
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     max-width: 688px;
 }
 
@@ -261,6 +272,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 60px;
+    margin-bottom: 28px;
 }
 
 .language {
@@ -268,6 +280,32 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 6px;
+}
+
+.language .language__input {
+    display: none;
+}
+
+.language__name {
+    font-size: 14px;
+    line-height: 17px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #fff;
+}
+
+.language__img {
+    position: relative;
+}
+
+.language__input:checked ~ .language__img::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    background-image: url(img/Checkbox.svg);
 }
 
 .text {
@@ -421,7 +459,7 @@ body {
     position: relative;
 }
 
-.question .form__input { 
+.question .form__input {
     border-color: var(--violet);
 }
 

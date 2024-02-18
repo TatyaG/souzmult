@@ -12,6 +12,10 @@ function createMain() {
     const startBtn = document.createElement('button');
     const title = document.createElement('h2');
 
+    const svgBlock = document.createElement('div');
+
+
+    svgBlock.classList.add('svg-block');
 
     startBtn.textContent = 'Старт';
     title.textContent = 'Добро пожаловать в мир приключений!';
@@ -45,7 +49,7 @@ function createMain() {
 
     })
 
-    document.body.append(header, main, footer);
+    document.body.append(svgBlock, header, main, footer);
 }
 
 
@@ -311,7 +315,7 @@ function createSuccess() {
     containerSection.classList.add('section__container');
     sectionImg.classList.add('success__img');
 
-    subtitle.textContent = `Ты молодец. Ответил правильно. Давай пойдём на задание ${countQuest + 1}`;
+    subtitle.textContent = `Ты молодец! Ответил правильно. Давай пойдём на задание ${countQuest + 1}.`;
     nextBtn.textContent = 'Следующий вопрос';
 
     main.append(section);
@@ -644,6 +648,7 @@ function createRegistration() {
         const radio = document.createElement('input');
         const flagImg = document.createElement('img');
         const langName = document.createElement('span');
+        const imgBlock = document.createElement('div');
 
         langName.textContent = lang.name;
         flagImg.src = lang.flag;
@@ -653,8 +658,11 @@ function createRegistration() {
 
         label.classList.add('language');
         radio.classList.add('language__input');
+        langName.classList.add('language__name');
+        imgBlock.classList.add('language__img');
+        imgBlock.append(flagImg);
 
-        label.append(flagImg, radio, langName);
+        label.append(radio, imgBlock, langName);
 
         labelBlock.append(label);
     })
