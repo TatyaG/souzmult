@@ -27,7 +27,7 @@ function createMain() {
     container.classList.add('container');
     text.classList.add('text');
     title.classList.add('title'),
-    startBtn.classList.add('btn-reset', 'button');
+        startBtn.classList.add('btn-reset', 'button');
     containerSection.classList.add('section__container');
 
     text.textContent = 'Готовы ли вы окунуться в увлекательный квест, полный загадок и открытий?»';
@@ -86,13 +86,12 @@ function createRules() {
         } else nextBtn.disabled = true;
     })
 
-   
 
     // Пункты списка с правилами
 
     const rulesItems = [
-        'Задания могут появляться в разных локациях, связанных с историей артефакта.', 
-        'Участники проходят через различные части города, решая загадки и выполняя задания, отображаемые на их телефоне.', 
+        'Задания могут появляться в разных локациях, связанных с историей артефакта.',
+        'Участники проходят через различные части города, решая загадки и выполняя задания, отображаемые на их телефоне.',
         'Победителем становится человек, который первым соберёт все фрагменты карты артефакта и разгадает его местонахождение.'
     ];
 
@@ -150,7 +149,6 @@ function createRules() {
 }
 
 
-
 // Экран с вопросом
 
 function createQuestion() {
@@ -176,7 +174,7 @@ function createQuestion() {
     // Проверяем то лежит в массиве
     console.log(question)
 
-        //      Есть ли в массиве АУДИО
+    //      Есть ли в массиве АУДИО
 
     if (question.audio.length) {
         let audioWrap = document.createElement('div')
@@ -305,6 +303,8 @@ function createSuccess() {
 
     const sectionImg = document.createElement('img');
 
+    let questSuccess = false
+
     sectionImg.src = 'img/success.webp';
 
     document.body.classList.add('success-body');
@@ -315,8 +315,16 @@ function createSuccess() {
     containerSection.classList.add('section__container');
     sectionImg.classList.add('success__img');
 
-    subtitle.textContent = `Ты молодец! Ответил правильно. Давай пойдём на задание ${countQuest + 1}.`;
-    nextBtn.textContent = 'Следующий вопрос';
+
+    if (countQuest < 10) {
+        subtitle.textContent = `Ты молодец! Ответил правильно. Давай пойдём на задание ${countQuest + 1}.`;
+        nextBtn.textContent = 'Следующий вопрос';
+    } else {
+        questSuccess = true
+        subtitle.textContent = `Ты молодец! Ответил правильно.`
+        nextBtn.textContent = 'Завершить квест';
+    }
+
 
     main.append(section);
     section.append(container);
@@ -328,7 +336,12 @@ function createSuccess() {
         e.preventDefault();
         document.body.innerHTML = '';
         document.body.classList.remove('success-body');
-        document.body.append(createQuestion(countQuest++));
+        if (questSuccess) {
+            document.body.append(successWindow());
+        } else {
+            document.body.append(createQuestion(countQuest++));
+        }
+
     })
 
 
@@ -366,7 +379,7 @@ const questDB = [
         video: [
             {name: 'video1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 2,
@@ -377,7 +390,7 @@ const questDB = [
         video: [
             {name: 'video2', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 3,
@@ -393,7 +406,7 @@ const questDB = [
         video: [
             {name: 'video3', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 4,
@@ -406,7 +419,7 @@ const questDB = [
         video: [
             {name: 'video4', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 5,
@@ -422,7 +435,7 @@ const questDB = [
         video: [
             {name: 'video5', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 6,
@@ -438,7 +451,7 @@ const questDB = [
         video: [
             {name: 'video6', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 7,
@@ -454,7 +467,7 @@ const questDB = [
         video: [
             {name: 'video7', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 8,
@@ -470,12 +483,12 @@ const questDB = [
         video: [
             {name: 'video8', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 9,
         title: 'Заголовок',
-        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.' ,
+        text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
             {name: 'image1', path: 'img/image.png'},
             {name: 'image2', path: 'img/image.png'},
@@ -486,7 +499,7 @@ const questDB = [
         video: [
             {name: 'video9', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
     {
         id: 10,
@@ -502,7 +515,7 @@ const questDB = [
         video: [
             {name: 'video10', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
-        answers:{}
+        answers: {}
     },
 ]
 
@@ -564,13 +577,12 @@ function createFooter() {
 }
 
 
-
 // Экран авторизации
 
 function createAuthorization() {
     const header = createHeader();
     const footer = createFooter();
-    
+
     const main = document.createElement('main');
     const section = document.createElement('section');
     const container = document.createElement('div');
@@ -602,7 +614,13 @@ function createAuthorization() {
         e.preventDefault();
         document.body.innerHTML = '';
         document.body.classList.remove('authorization-body');
-        createRegistration();
+        if (confirm('Пользователь зарегистрирован?')) {
+            createMain();
+        } else {
+            createRegistration();
+        }
+
+
     })
 
 }
@@ -614,7 +632,7 @@ function createAuthorization() {
 function createRegistration() {
     const header = createHeader();
     const footer = createFooter();
-    
+
     const main = document.createElement('main');
     const section = document.createElement('section');
     const container = document.createElement('div');
@@ -630,7 +648,7 @@ function createRegistration() {
 
     languageTitle.textContent = 'Сhoose your language';
 
-    const langs =  [
+    const langs = [
         {
             id: 1,
             name: 'Русский',
@@ -679,7 +697,6 @@ function createRegistration() {
     labelBlock.classList.add('languages__block');
 
 
-
     title.textContent = 'Регистрация';
     submit.textContent = 'Зарегистрироваться';
     input.placeholder = 'Введите свой номер';
@@ -697,6 +714,48 @@ function createRegistration() {
         document.body.classList.remove('registration-body');
         createMain();
     })
+
+}
+
+
+// Завершающий экран
+
+function successWindow() {
+
+    const main = document.createElement('main');
+    const container = document.createElement('div');
+    const containerSection = document.createElement('div');
+    const section = document.createElement('section');
+    const subtitle = document.createElement('p');
+    const giftBtn = document.createElement('button');
+    const historyBtn = document.createElement('button');
+
+    const sectionImg = document.createElement('img');
+
+    let questSuccess = false
+
+    sectionImg.src = 'img/successImg.png';
+
+    giftBtn.textContent = 'Как получить приз'
+    historyBtn.textContent = 'Справка об истории анимации '
+
+
+    document.body.classList.add('success-window');
+    section.classList.add('section', 'success');
+    container.classList.add('container');
+    subtitle.classList.add('subtitle');
+    giftBtn.classList.add('btn-reset', 'button', 'question__button');
+    historyBtn.classList.add('btn-reset', 'button', 'success_button')
+    containerSection.classList.add('section__container');
+    sectionImg.classList.add('success__img');
+
+
+    main.append(section);
+    section.append(container);
+    container.append(containerSection);
+    containerSection.append(sectionImg, subtitle, giftBtn, historyBtn);
+
+    return main;
 
 }
 

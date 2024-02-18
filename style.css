@@ -7,7 +7,7 @@
 @font-face {
     font-family: 'SMF_fontTEXT';
     src: url('fonts/SMF_fontTEXT-Light.woff2') format('woff2'),
-        url('fonts/SMF_fontTEXT-Light.woff') format('woff');
+    url('fonts/SMF_fontTEXT-Light.woff') format('woff');
     font-weight: 300;
     font-style: normal;
     font-display: swap;
@@ -16,7 +16,7 @@
 @font-face {
     font-family: 'SMF_fontTEXT';
     src: url('fonts/SMF_fontTEXT-Bold.woff2') format('woff2'),
-        url('fonts/SMF_fontTEXT-Bold.woff') format('woff');
+    url('fonts/SMF_fontTEXT-Bold.woff') format('woff');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -25,7 +25,7 @@
 @font-face {
     font-family: 'SMF_fontTEXT';
     src: url('fonts/SMF_fontTEXT-Heavy.woff2') format('woff2'),
-        url('fonts/SMF_fontTEXT-Heavy.woff') format('woff');
+    url('fonts/SMF_fontTEXT-Heavy.woff') format('woff');
     font-weight: 900;
     font-style: normal;
     font-display: swap;
@@ -34,12 +34,11 @@
 @font-face {
     font-family: 'SMF_fontTEXT';
     src: url('fonts/SMF_fontTEXT-Regular.woff2') format('woff2'),
-        url('fonts/SMF_fontTEXT-Regular.woff') format('woff');
+    url('fonts/SMF_fontTEXT-Regular.woff') format('woff');
     font-weight: 300;
     font-style: normal;
     font-display: swap;
 }
-
 
 
 :root {
@@ -112,8 +111,12 @@ body {
     display: flex;
     flex-direction: column;
     gap: 45px;
-    /* background: url(img/bg-desktop.webp) no-repeat bottom / 100% 330px, url(img/illiustration.svg) no-repeat 50% 100px, linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%); */
-    background: linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%);
+
+    background: url(img/bg-desk.svg) no-repeat 100% 39rem/cover,
+    url(img/bg-people-desk.svg) no-repeat 52%/65rem,
+    linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%),
+    linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%);
+    /*background: linear-gradient(183.26deg, #785EFF -14.11%, #FFC6A3 61.78%);*/
     height: 100vh;
 }
 
@@ -136,6 +139,14 @@ body {
     flex-direction: column;
     justify-content: end;
     background: url(img/clouds.webp) no-repeat top var(--green);
+    background-size: contain;
+}
+
+.success-window {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    background: url(img/clouds_success.png) no-repeat top ,linear-gradient(#FFC7A3 33%,#FF0000 121%,#FFFFFF 161%);
     background-size: contain;
 }
 
@@ -249,6 +260,12 @@ body {
     color: var(--dark-purple);
 }
 
+.success_button {
+    background-color: transparent;
+    color: #FFFFFF;
+    border: 1px solid;
+    margin-top: 20px;
+}
 
 
 .section__container {
@@ -375,7 +392,7 @@ body {
     border: 2px solid var(--violet);
 }
 
-.rules__label input:checked~.rules__checkbox {
+.rules__label input:checked ~ .rules__checkbox {
     background: url(img/check.svg) no-repeat center, var(--violet);
 }
 
