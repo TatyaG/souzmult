@@ -1,6 +1,6 @@
-
 // Стартовая страница
 let countQuest = 1
+let langName = 'en'
 
 function createMain() {
     const header = createHeader();
@@ -17,9 +17,13 @@ function createMain() {
 
 
     svgBlock.classList.add('svg-block');
-
-    startBtn.textContent = 'Старт';
-    title.textContent = 'Добро пожаловать в мир приключений!';
+    if (langName === 'ru') {
+        startBtn.textContent = 'Старт';
+        title.textContent = 'Добро пожаловать в мир приключений!';
+    } else {
+        startBtn.textContent = 'Start';
+        title.textContent = 'Welcome to the world of adventure!';
+    }
 
 
     document.body.classList.add('start-body');
@@ -31,7 +35,7 @@ function createMain() {
         startBtn.classList.add('btn-reset', 'button');
     containerSection.classList.add('section__container');
 
-    text.textContent = 'Готовы ли вы окунуться в увлекательный квест, полный загадок и открытий?»';
+    text.textContent = 'Are you ready to plunge into an exciting quest full of mysteries and discoveries?';
 
     main.append(section);
     section.append(container);
@@ -368,16 +372,16 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [
-            { name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         video: [
-            { name: 'video1', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -388,7 +392,7 @@ const questDB = [
         images: [],
         audio: [],
         video: [
-            { name: 'video2', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video2', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -397,14 +401,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды?',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video3', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video3', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -414,10 +418,10 @@ const questDB = [
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [],
         audio: [
-            { name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         video: [
-            { name: 'video4', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video4', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -426,14 +430,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video5', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video5', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -442,14 +446,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video6', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video6', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -458,14 +462,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video7', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video7', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -474,14 +478,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video8', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video8', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -490,14 +494,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video9', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video9', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -506,14 +510,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            { name: 'image1', path: 'img/image.png' },
-            { name: 'image2', path: 'img/image.png' },
-            { name: 'image3', path: 'img/image.png' },
-            { name: 'image4', path: 'img/image.png' },
+            {name: 'image1', path: 'img/image.png'},
+            {name: 'image2', path: 'img/image.png'},
+            {name: 'image3', path: 'img/image.png'},
+            {name: 'image4', path: 'img/image.png'},
         ],
         audio: [],
         video: [
-            { name: 'video10', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
+            {name: 'video10', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
         ],
         answers: {}
     },
@@ -662,7 +666,7 @@ function createRegistration() {
     const langs = [
         {
             id: 1,
-            name: 'Русский',
+            name: 'Russian',
             flag: 'img/rus.svg',
         },
         {
@@ -675,6 +679,8 @@ function createRegistration() {
     langs.forEach(lang => {
         const label = document.createElement('label');
         const radio = document.createElement('input');
+        radio.id = 'btn_lang'
+        radio.setAttribute('languages',lang.name)
         const flagImg = document.createElement('img');
         const langName = document.createElement('span');
         const imgBlock = document.createElement('div');
@@ -701,6 +707,7 @@ function createRegistration() {
     container.classList.add('container');
     form.classList.add('registration__form', 'form');
     input.classList.add('form__input', 'registration__input');
+    input.id = 'phone'
     submit.classList.add('form__button', 'registration__button', 'btn-reset');
     title.classList.add('title');
     languageTitle.classList.add('title');
@@ -723,20 +730,23 @@ function createRegistration() {
     label.append(input, clearButton);
     form.append(languageBlock, title, label, submit, errorBlock);
 
+    input.addEventListener('change', (e) => {
+        console.log(e)
+    })
     submit.addEventListener('click', (e) => {
         e.preventDefault();
-   
-
-        const validation = validationRegistrationForm(input, errorBlock);
+        const countryData = iti.getSelectedCountryData();
+        console.log(countryData)
+        const validation = validationRegistrationForm(input, errorBlock, countryData);
         console.log(validation)
 
         if (validation) {
             console.log(input.value.replace(/[- )(]/g, ''))
             document.body.innerHTML = '';
             document.body.classList.remove('registration-body');
+
             createMain();
-            const countryData = iti.getSelectedCountryData();
-            console.log(countryData)
+
         }
 
 
@@ -753,7 +763,6 @@ function createRegistration() {
             e.preventDefault();
         }
     })
-
 
 
     // Маска на телефон
@@ -778,13 +787,6 @@ function createRegistration() {
         input.value = '';
         clearButton.classList.remove('active');
     })
-
-
-
-
-
-
-
 
 
 }
@@ -832,13 +834,26 @@ function successWindow() {
 }
 
 
-function validationRegistrationForm(input, container) {
+function validationRegistrationForm(input, container, country) {
+    const inputEl = document.querySelector("#phone");
+    console.log(country)
 
+
+    const iti = window.intlTelInput(inputEl, {
+        initialCountry: country.iso2,
+        utilsScript: "/intl-tel-input/js/utils.js?1707906286003"
+    });
     const radioInputs = document.querySelectorAll(`[name = "lang"]`);
+    const errorMap = ["Не верно введен номер"];
+    const errorMsg = document.createElement("span")
+    errorMsg.id = 'error-msg';
+    const validMsg = document.createElement('span')
+    validMsg.id = "valid-msg";
 
-     // Проверка, введено ли поле с номером телефона
 
-     if (input.value == '') {
+    // Проверка, введено ли поле с номером телефона
+
+    if (input.value === '') {
         const error = document.createElement('p');
         error.textContent = 'Введите телефон';
         container.append(error);
@@ -847,15 +862,61 @@ function validationRegistrationForm(input, container) {
 
     // Проверка, выбран ли язык
 
-    if (radioInputs[0].checked != true && radioInputs[1].checked != true) {
+    if (radioInputs[0].checked !== true && radioInputs[1].checked !== true) {
         const error = document.createElement('p');
         error.textContent = 'Выберите свой язык';
         container.append(error);
         return false;
     }
+    // Проверка по количеству символов согласно выбранной стране,
+
+    const reset = () => {
+        input.classList.remove("error");
+        errorMsg.textContent = "";
+        errorMsg.classList.add("hide");
+        validMsg.classList.add("hide");
+        container.append(errorMsg);
+    };
+    reset()
+    if (input.value.trim()) {
+        console.log(input.value.length)
+        if (iti.isValidNumber()) {
+            validMsg.classList.remove("hide");
+            validMsg.textContent = '✓ Valid'
+            container.append(validMsg)
+            return true
+        } else if (country.iso2 === 'ru' && input.value.length === 9) {
+            validMsg.classList.remove("hide");
+            validMsg.textContent = '✓ Valid'
+            container.append(validMsg)
+
+            return true
+        } else {
+            input.classList.add("error");
+            const errorCode = iti.getValidationError();
+            errorMsg.textContent = errorMap[errorCode] || "Не верно введен номер";
+            errorMsg.classList.remove("hide");
+            container.append(errorMsg);
+
+            return false
+        }
+    }
+
 
     return true;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    let input = document.querySelectorAll('#btn_lang')
+    input.forEach((el) => {
+        console.log(el)
+        el.addEventListener('input', (e) => {
+            console.log(el.getAttribute('languages'))
+
+        })
+    })
+
+})
 
 
 createRegistration()
