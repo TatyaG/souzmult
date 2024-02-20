@@ -1,8 +1,8 @@
 // Стартовая страница
 let countQuest = 1
-let langName = 'en'
+let langCode
 
-function createMain() {
+function createMain(lang) {
     const header = createHeader();
     const footer = createFooter();
     const main = document.createElement('main');
@@ -13,16 +13,27 @@ function createMain() {
     const startBtn = document.createElement('button');
     const title = document.createElement('h2');
 
-    const svgBlock = document.createElement('div');
+    const bottomBlock = document.createElement('div');
+    bottomBlock.classList.add('bottom-block');
+
+    const picture = document.createElement('picture');
 
 
-    svgBlock.classList.add('svg-block');
-    if (langName === 'ru') {
+    picture.innerHTML = `
+    <source srcset="img/background.webp" media="(max-width: 767px)">
+    <source srcset="img/background-tablet.webp" media="(max-width: 1023px)">
+    <source srcset="img/background-desktop.webp" media="(max-width: 1919px)">
+    <img src="img/background-desktop.webp">
+    `
+
+    if (lang == 'ru') {
         startBtn.textContent = 'Старт';
         title.textContent = 'Добро пожаловать в мир приключений!';
+        text.textContent = 'Готовы ли вы окунуться в увлекательный квест, полный загадок и открытий?';
     } else {
         startBtn.textContent = 'Start';
         title.textContent = 'Welcome to the world of adventure!';
+        text.textContent = 'Are you ready to plunge into an exciting quest full of mysteries and discoveries?';
     }
 
 
@@ -35,9 +46,10 @@ function createMain() {
         startBtn.classList.add('btn-reset', 'button');
     containerSection.classList.add('section__container');
 
-    text.textContent = 'Are you ready to plunge into an exciting quest full of mysteries and discoveries?';
+
 
     main.append(section);
+    bottomBlock.append(main, footer);
     section.append(container);
 
     container.append(containerSection);
@@ -50,18 +62,18 @@ function createMain() {
         e.preventDefault();
         document.body.innerHTML = '';
         document.body.classList.remove('start-body');
-        document.body.append(createRules());
+        document.body.append(createRules(lang));
 
     })
 
-    document.body.append(svgBlock, header, main, footer);
+    document.body.append(header, picture, bottomBlock);
 }
 
 
 // Экран с правилами
 
 
-function createRules() {
+function createRules(lang) {
     const main = document.createElement('main');
     const section = document.createElement('section');
     const container = document.createElement('div');
@@ -79,9 +91,7 @@ function createRules() {
     const checkboxText = document.createElement('span');
 
     input.type = 'checkbox';
-    checkboxText.textContent = 'Я подтверждаю, что ознакомлен и согласен с правилами использования данного сервиса';
 
-    policy.textContent = 'Политика конфиденциальности';
 
     nextBtn.disabled = true;
 
@@ -94,11 +104,37 @@ function createRules() {
 
     // Пункты списка с правилами
 
-    const rulesItems = [
-        'Задания могут появляться в разных локациях, связанных с историей артефакта.',
-        'Участники проходят через различные части города, решая загадки и выполняя задания, отображаемые на их телефоне.',
-        'Победителем становится человек, который первым соберёт все фрагменты карты артефакта и разгадает его местонахождение.'
-    ];
+    let rulesItems = []
+
+    if (lang == 'ru') {
+        checkboxText.textContent = 'Я подтверждаю, что ознакомлен и согласен с правилами использования данного сервиса';
+        policy.textContent = 'Политика конфиденциальности';
+
+        title.textContent = 'Правила';
+        rulesText.textContent = 'Приглашаем вас отправиться к первой локации нашего захватывающего квеста!';
+        nextBtn.textContent = 'Соглашаюсь';
+
+        rulesItems = [
+            'Задания могут появляться в разных локациях, связанных с историей артефакта.',
+            'Участники проходят через различные части города, решая загадки и выполняя задания, отображаемые на их телефоне.',
+            'Победителем становится человек, который первым соберёт все фрагменты карты артефакта и разгадает его местонахождение.'
+        ];
+    } else {
+        checkboxText.textContent = 'I have read and agree to the privacy policy and service rules';
+        policy.textContent = 'Privacy Policy';
+
+        title.textContent = 'Rules';
+        rulesText.textContent = 'Приглашаем вас отправиться к первой локации нашего захватывающего квеста!';
+        nextBtn.textContent = 'I Agree';
+
+        rulesItems = [
+            'Hello, World',
+            'Hello, World',
+            'Hello, World'
+        ];
+    }
+
+
 
 
     // Проходим по каждому элементу массива и создаем li
@@ -126,9 +162,7 @@ function createRules() {
     label.classList.add('rules__label');
 
 
-    title.textContent = 'Правила';
-    rulesText.textContent = 'Приглашаем вас отправиться к первой локации нашего захватывающего квеста!';
-    nextBtn.textContent = 'Далее';
+
 
     nextBtn.type = 'submit';
 
@@ -146,7 +180,7 @@ function createRules() {
         e.preventDefault();
         document.body.innerHTML = '';
         document.body.classList.remove('rules-body');
-        document.body.append(createQuestion(1));
+        document.body.append(createQuestion(lang));
     })
 
     return main;
@@ -156,7 +190,7 @@ function createRules() {
 
 // Экран с вопросом
 
-function createQuestion() {
+function createQuestion(lang) {
     const main = document.createElement('main');
     const section = document.createElement('section');
     const container = document.createElement('div');
@@ -192,11 +226,12 @@ function createQuestion() {
         audioWrap.classList.add('question__media');
 
         audioWrap.append(audioElem);
-        containerSection.append(audioWrap)
-        audioElem.src = question.audio[0].URL
+        containerSection.append(audioWrap);
+        audioElem.src = question.audio[0].URL;
+
     } else {
 
-        //      Ели в массиве картинок больше 1 то делаем слайдшоу
+        //      Если в массиве картинок больше 1 то делаем слайдшоу
 
         if (question.images.length > 1) {
             const carousel = document.createElement('div');
@@ -208,7 +243,7 @@ function createQuestion() {
                 carouselItem.classList.add('f-carousel__slide');
 
                 carouselItem.setAttribute('data-fancybox', 'gallery');
-                carouselItem.setAttribute('data-src', el);
+                carouselItem.setAttribute('data-src', el.path);
 
                 img.src = el.path;
 
@@ -223,13 +258,11 @@ function createQuestion() {
                 },
             };
 
-            Fancybox.bind("[data-fancybox]", {
+            Fancybox.bind('[data-fancybox]', {
                 // Your custom options
             });
 
             carousel.classList.add('question__media');
-
-
             containerSection.append(carousel);
 
             new Carousel(carousel, options);
@@ -255,7 +288,11 @@ function createQuestion() {
             containerSection.append(video)
         }
     }
-    submit.textContent = 'Ответить';
+
+    if (lang == 'ru') {
+        submit.textContent = 'Ответить';
+    } else submit.textContent = 'Send';
+
 
     document.body.classList.add('question-body');
 
@@ -270,7 +307,7 @@ function createQuestion() {
     text.classList.add('question__text');
     label.classList.add('form__label');
 
-    num.textContent = `Вопрос ${countQuest} из 10`;
+    num.textContent = `${countQuest}/10`;
     text.textContent = question.text;
 
     title.textContent = question.title;
@@ -290,7 +327,11 @@ function createQuestion() {
         e.preventDefault();
         document.body.innerHTML = '';
         document.body.classList.remove('question-body');
-        document.body.append(createSuccess(countQuest));
+
+        if (countQuest == 10) {
+            document.body.append(successWindow(lang));
+            
+        } else document.body.append(createSuccess(countQuest, lang));
     })
 
     return main;
@@ -298,7 +339,7 @@ function createQuestion() {
 
 // Экран, если ответ положительный
 
-function createSuccess() {
+function createSuccess(lang) {
     const main = document.createElement('main');
     const container = document.createElement('div');
     const containerSection = document.createElement('div');
@@ -320,15 +361,24 @@ function createSuccess() {
     containerSection.classList.add('section__container');
     sectionImg.classList.add('success__img');
 
-
-    if (countQuest < 10) {
-        subtitle.textContent = `Ты молодец! Ответил правильно. Давай пойдём на задание ${countQuest + 1}.`;
-        nextBtn.textContent = 'Следующий вопрос';
+    if (lang == 'ru') {
+        if (countQuest < 10) {
+            subtitle.textContent = `Ты молодец! Ответил правильно. Давай пойдём на задание ${countQuest + 1}.`;
+            nextBtn.textContent = 'Следующий вопрос';
+        } else {
+            questSuccess = true;
+        }
     } else {
-        questSuccess = true
-        subtitle.textContent = `Ты молодец! Ответил правильно.`
-        nextBtn.textContent = 'Завершить квест';
+        if (countQuest < 10) {
+            subtitle.textContent = `Well done! That's correct. Let's move to Task ${countQuest + 1}.`;
+            nextBtn.textContent = 'Next task';
+        } else {
+            questSuccess = true;        
+        }
     }
+
+
+    
 
 
     main.append(section);
@@ -338,13 +388,11 @@ function createSuccess() {
 
 
     nextBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.body.innerHTML = '';
-        document.body.classList.remove('success-body');
-        if (questSuccess) {
-            document.body.append(successWindow());
-        } else {
-            document.body.append(createQuestion(countQuest++));
+        e.preventDefault();     
+        if (!questSuccess) {
+            document.body.innerHTML = '';
+            document.body.classList.remove('success-body');
+            document.body.append(createQuestion(countQuest++, lang));
         }
 
     })
@@ -372,16 +420,16 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [
-            {name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         video: [
-            {name: 'video1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video1', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -392,7 +440,7 @@ const questDB = [
         images: [],
         audio: [],
         video: [
-            {name: 'video2', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video2', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -401,14 +449,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды?',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video3', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video3', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -418,10 +466,10 @@ const questDB = [
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [],
         audio: [
-            {name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'image1', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         video: [
-            {name: 'video4', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video4', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -430,14 +478,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video5', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video5', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -446,14 +494,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video6', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video6', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -462,14 +510,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video7', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video7', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -478,14 +526,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video8', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video8', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -494,14 +542,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video9', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video9', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -510,14 +558,14 @@ const questDB = [
         title: 'Заголовок',
         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
         images: [
-            {name: 'image1', path: 'img/image.png'},
-            {name: 'image2', path: 'img/image.png'},
-            {name: 'image3', path: 'img/image.png'},
-            {name: 'image4', path: 'img/image.png'},
+            { name: 'image1', path: 'img/image.jpg' },
+            { name: 'image2', path: 'img/image.jpg' },
+            { name: 'image3', path: 'img/image.jpg' },
+            { name: 'image4', path: 'img/image.jpg' },
         ],
         audio: [],
         video: [
-            {name: 'video10', URL: 'http://www.sousound.com/music/healing/healing_01.mp'},
+            { name: 'video10', URL: 'http://www.sousound.com/music/healing/healing_01.mp' },
         ],
         answers: {}
     },
@@ -528,18 +576,60 @@ const questDB = [
 
 // Хидер с логтипами
 
-function createHeader() {
+function createHeader(lang) {
     const header = document.createElement('header');
     const container = document.createElement('div');
     const headerContainer = document.createElement('div');
 
-    const logo1 = document.createElement('img');
-    const logo2 = document.createElement('img');
-    const logo3 = document.createElement('img');
+    const logo1 = document.createElement('picture');
+    const logo2 = document.createElement('picture');
+    const logo3 = document.createElement('picture');
 
-    logo1.src = 'img/logo1.svg';
-    logo2.src = 'img/logo2.svg';
-    logo3.src = 'img/logo3.svg';
+    if (lang == 'ru') {
+        logo1.innerHTML = `
+        <source srcset="img/logo1.svg" media="(max-width: 767px)">
+        <source srcset="img/logo1-tablet.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo1-desktop.svg" media="(max-width: 1919px)">
+        <img src="img/logo1-desktop.svg.webp">
+        `
+
+        logo2.innerHTML = `
+        <source srcset="img/logo2.svg" media="(max-width: 767px)">
+        <source srcset="img/logo2-tablet.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo2-desktop.svg" media="(max-width: 1919px)">
+        <img src="img/logo2-desktop.svg">
+        `
+
+        logo3.innerHTML = `
+        <source srcset="img/logo3.svg" media="(max-width: 767px)">
+        <source srcset="img/logo3-tablet.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo3-desktop.svg" media="(max-width: 1919px)">
+        <img src="img/logo3-desktop.svg">
+        `
+    } else {
+        logo1.innerHTML = `
+        <source srcset="img/logo1-en.svg" media="(max-width: 767px)">
+        <source srcset="img/logo1-tablet-en.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo1-desktop-en.svg" media="(max-width: 1919px)">
+        <img src="img/logo1-desktop-en.svg">
+        `
+
+        logo2.innerHTML = `
+        <source srcset="img/logo2-en.svg" media="(max-width: 767px)">
+        <source srcset="img/logo2-tablet-en.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo2-desktop-en.svg" media="(max-width: 1919px)">
+        <img src="img/logo2-desktop-en.svg">
+        `
+
+        logo3.innerHTML = `
+        <source srcset="img/logo3-en.svg" media="(max-width: 767px)">
+        <source srcset="img/logo3-tablet-en.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo3-desktop-en.svg" media="(max-width: 1919px)">
+        <img src="img/logo3-desktop-en.svg">
+        `
+    }
+
+
 
     header.classList.add('header');
     container.classList.add('container');
@@ -556,18 +646,60 @@ function createHeader() {
 // Футер с логотипами
 
 
-function createFooter() {
+function createFooter(lang) {
     const footer = document.createElement('footer');
     const container = document.createElement('div');
     const footerContainer = document.createElement('div');
 
-    const logo1 = document.createElement('img');
-    const logo2 = document.createElement('img');
-    const logo3 = document.createElement('img');
+    const logo1 = document.createElement('picture');
+    const logo2 = document.createElement('picture');
+    const logo3 = document.createElement('picture');
 
-    logo1.src = 'img/logo4.svg';
-    logo2.src = 'img/logo5.svg';
-    logo3.src = 'img/logo6.svg';
+    if (lang == 'ru') {
+        logo1.innerHTML = `
+        <source srcset="img/logo4.svg" media="(max-width: 767px)">
+        <source srcset="img/logo4-tablet.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo4-desktop.svg" media="(max-width: 1919px)">
+        <img src="img/logo4-desktop.svg">
+        `
+
+        logo2.innerHTML = `
+        <source srcset="img/logo5.svg" media="(max-width: 767px)">
+        <source srcset="img/logo5-tablet.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo5-desktop.svg" media="(max-width: 1919px)">
+        <img src="img/logo5-desktop.svg">
+        `
+
+        logo3.innerHTML = `
+        <source srcset="img/logo6.svg" media="(max-width: 767px)">
+        <source srcset="img/logo6-tablet.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo6-desktop.svg" media="(max-width: 1919px)">
+        <img src="img/logo6-desktop.svg">
+        `
+    } else {
+        logo1.innerHTML = `
+        <source srcset="img/logo4-en.svg" media="(max-width: 767px)">
+        <source srcset="img/logo4-tablet-en.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo4-desktop-en.svg" media="(max-width: 1919px)">
+        <img src="img/logo4-desktop-en.svg">
+        `
+
+        logo2.innerHTML = `
+        <source srcset="img/logo5-en.svg" media="(max-width: 767px)">
+        <source srcset="img/logo5-tablet-en.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo5-desktop-en.svg" media="(max-width: 1919px)">
+        <img src="img/logo5-desktop-en.svg">
+        `
+
+        logo3.innerHTML = `
+        <source srcset="img/logo6-en.svg" media="(max-width: 767px)">
+        <source srcset="img/logo6-tablet-en.svg" media="(max-width: 1023px)">
+        <source srcset="img/logo6-desktop-en.svg" media="(max-width: 1919px)">
+        <img src="img/logo6-desktop-en.svg">
+        `
+    }
+
+
 
     footer.classList.add('footer');
     container.classList.add('container');
@@ -633,9 +765,9 @@ function createAuthorization() {
 // Экран регистрации и выбора языка
 
 
-function createRegistration() {
-    const header = createHeader();
-    const footer = createFooter();
+function createRegistration(lang) {
+    const header = createHeader(lang);
+    const footer = createFooter(lang);
 
     const main = document.createElement('main');
     const section = document.createElement('section');
@@ -661,16 +793,19 @@ function createRegistration() {
     
     `
 
+
     languageTitle.textContent = 'Сhoose your language';
 
     const langs = [
         {
             id: 1,
+            code: 'ru',
             name: 'Russian',
             flag: 'img/rus.svg',
         },
         {
             id: 2,
+            code: 'en',
             name: 'English',
             flag: 'img/eng.svg',
         }
@@ -680,7 +815,7 @@ function createRegistration() {
         const label = document.createElement('label');
         const radio = document.createElement('input');
         radio.id = 'btn_lang'
-        radio.setAttribute('languages',lang.name)
+        radio.setAttribute('languages', lang.code)
         const flagImg = document.createElement('img');
         const langName = document.createElement('span');
         const imgBlock = document.createElement('div');
@@ -690,6 +825,16 @@ function createRegistration() {
 
         radio.type = 'radio';
         radio.name = 'lang';
+
+        if (langCode == lang.code) radio.checked = true;
+
+        radio.addEventListener('change', () => {
+            document.body.innerHTML = '';
+            langCode = lang.code;
+            createRegistration(lang.code);
+        })
+
+
 
         label.classList.add('language');
         radio.classList.add('language__input');
@@ -718,9 +863,19 @@ function createRegistration() {
     clearButton.classList.add('clear-btn', 'btn-reset');
 
 
-    title.textContent = 'Регистрация';
-    submit.textContent = 'Зарегистрироваться';
-    input.placeholder = 'Введите свой номер';
+
+
+    if (lang == 'ru') {
+        title.textContent = 'Регистрация';
+        submit.textContent = 'Зарегистрироваться';
+        input.placeholder = 'Введите свой номер';
+    }
+    else {
+        title.textContent = 'Sign in';
+        submit.textContent = 'Sign in';
+        input.placeholder = 'Enter your telephone number';
+    }
+
 
     document.body.append(header, main, footer);
     main.append(section);
@@ -730,22 +885,18 @@ function createRegistration() {
     label.append(input, clearButton);
     form.append(languageBlock, title, label, submit, errorBlock);
 
-    input.addEventListener('change', (e) => {
-        console.log(e)
-    })
+
     submit.addEventListener('click', (e) => {
         e.preventDefault();
         const countryData = iti.getSelectedCountryData();
-        console.log(countryData)
         const validation = validationRegistrationForm(input, errorBlock, countryData);
-        console.log(validation)
 
         if (validation) {
             console.log(input.value.replace(/[- )(]/g, ''))
             document.body.innerHTML = '';
             document.body.classList.remove('registration-body');
 
-            createMain();
+            createMain(lang);
 
         }
 
@@ -794,7 +945,7 @@ function createRegistration() {
 
 // Завершающий экран
 
-function successWindow() {
+function successWindow(lang) {
 
     const main = document.createElement('main');
     const container = document.createElement('div');
@@ -802,16 +953,25 @@ function successWindow() {
     const section = document.createElement('section');
     const subtitle = document.createElement('p');
     const giftBtn = document.createElement('button');
-    const historyBtn = document.createElement('button');
+    const historyBtn = document.createElement('a');
 
     const sectionImg = document.createElement('img');
+    historyBtn.href = 'https://souzmult.ru/about';
 
     let questSuccess = false
 
-    sectionImg.src = 'img/successImg.png';
+    
 
-    giftBtn.textContent = 'Как получить приз'
-    historyBtn.textContent = 'Справка об истории анимации '
+    if (lang == 'ru') {
+        sectionImg.src = 'img/successImg.png';
+        giftBtn.textContent = 'Как получить приз';
+        historyBtn.textContent = 'Справка об истории анимации';
+    } else {
+        sectionImg.src = 'img/successImg-en.png';
+        giftBtn.textContent = 'How to get a prize';
+        historyBtn.textContent = 'History facts about russian animation';
+    }
+
 
 
     document.body.classList.add('success-window');
@@ -829,8 +989,56 @@ function successWindow() {
     container.append(containerSection);
     containerSection.append(sectionImg, subtitle, giftBtn, historyBtn);
 
+    giftBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const modal = createInstructions();
+        document.body.append(modal);
+    })
+
     return main;
 
+}
+
+
+function createInstructions(lang) {
+    const modal = document.createElement('div');
+    const modalWindow = document.createElement('div');
+    const modalBody = document.createElement('div');
+
+    const closeBtn = document.createElement('button');
+    const title = document.createElement('h2');
+    const text = document.createElement('p');
+    const img = document.createElement('img');
+
+    img.src = 'img/modal-img-tablet.webp';
+
+    if (lang == 'ru') {
+        title.textContent = 'Как получить приз';
+        text.textContent = 'Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления. Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления.';
+    } else {
+        title.textContent = 'How to get a prize';
+        text.textContent = 'Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления. Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления.';
+    }
+
+    
+
+    modal.classList.add('modal');
+    modalWindow.classList.add('modal__window');
+    modalBody.classList.add('modal__body');
+    closeBtn.classList.add('modal__close', 'btn-reset');
+    title.classList.add('title', 'title-violet');
+    text.classList.add('text');
+
+    modal.append(modalWindow);
+    modalWindow.append(closeBtn, modalBody);
+    modalBody.append(title, text, img);
+
+    closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.remove();
+    })
+
+    return modal;
 }
 
 
@@ -851,23 +1059,57 @@ function validationRegistrationForm(input, container, country) {
     validMsg.id = "valid-msg";
 
 
+
+
     // Проверка, введено ли поле с номером телефона
 
-    if (input.value === '') {
-        const error = document.createElement('p');
-        error.textContent = 'Введите телефон';
-        container.append(error);
+    if (input.value == '') {
+        if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').remove();
+        if (!document.querySelector('.error-phone')) {
+            const error = document.createElement('p');
+            error.classList.add('error-phone');
+            error.textContent = 'Введите телефон';
+            container.append(error);
+
+        }
+
         return false;
+
+    } else if (iti.isValidNumber() == false) {
+        if (document.querySelector('.error-phone')) document.querySelector('.error-phone').remove();
+        if (!document.querySelector('.error-uncorrect')) {
+            const error = document.createElement('p');
+            error.classList.add('error-uncorrect');
+            error.textContent = 'Введите корректный телефон';
+            container.append(error);
+        }
+
+
+        return false;
+    }
+
+
+    else {
+        if (document.querySelector('.error-phone')) document.querySelector('.error-phone').remove();
+        if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').remove();
     }
 
     // Проверка, выбран ли язык
 
     if (radioInputs[0].checked !== true && radioInputs[1].checked !== true) {
-        const error = document.createElement('p');
-        error.textContent = 'Выберите свой язык';
-        container.append(error);
+        if (!document.querySelector('.error-lang')) {
+            const error = document.createElement('p');
+            error.classList.add('error-lang');
+            error.textContent = 'Выберите свой язык';
+            container.append(error);
+
+        }
         return false;
+
+    } else {
+        if (document.querySelector('.error-lang')) document.querySelector('.error-lang').remove();
     }
+
     // Проверка по количеству символов согласно выбранной стране,
 
     const reset = () => {
@@ -906,19 +1148,22 @@ function validationRegistrationForm(input, container, country) {
     return true;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    let input = document.querySelectorAll('#btn_lang')
-    input.forEach((el) => {
-        console.log(el)
-        el.addEventListener('input', (e) => {
-            console.log(el.getAttribute('languages'))
+// document.addEventListener('DOMContentLoaded', () => {
+//     const input = document.querySelectorAll('#btn_lang')
+//     input.forEach((el) => {
+//         el.addEventListener('input', (e) => {
+//             console.log(el.getAttribute('languages'))
+//             langName = el.getAttribute('languages');
 
-        })
-    })
+//             document.body.innerHTML = '';
 
-})
+//             createRegistration(langName)
+//         })
+//     })
+
+// })
 
 
-createRegistration()
+createRegistration('ru')
 // createAuthorization()
 // createMain()
