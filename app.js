@@ -4,6 +4,9 @@ let langCode;
 let phone;
 let answer;
 let questions;
+let rules;
+let id;
+
 
 function createMain(lang) {
     const header = createHeader(lang);
@@ -20,7 +23,6 @@ function createMain(lang) {
     bottomBlock.classList.add('bottom-block');
 
     const picture = document.createElement('picture');
-
 
     picture.innerHTML = `
     <source srcset="img/background.webp" media="(max-width: 767px)">
@@ -45,10 +47,8 @@ function createMain(lang) {
     main.classList.add('main');
     container.classList.add('container');
     text.classList.add('text');
-    title.classList.add('title'),
-        startBtn.classList.add('btn-reset', 'button');
+    title.classList.add('title'), startBtn.classList.add('btn-reset', 'button');
     containerSection.classList.add('section__container');
-
 
 
     main.append(section);
@@ -63,9 +63,22 @@ function createMain(lang) {
 
     startBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        document.body.innerHTML = '';
-        document.body.classList.remove('start-body');
-        document.body.append(createRules(lang));
+        axios.get('php/get_rule.php', {
+            params: {
+                langCode: lang,
+            }
+        })
+            .then(function (response) {
+                rules = response.data;
+
+                document.body.innerHTML = '';
+                document.body.classList.remove('start-body');
+                document.body.append(createRules(lang));
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
 
     })
 
@@ -82,7 +95,6 @@ function createRules(lang) {
     const container = document.createElement('div');
     const title = document.createElement('h2');
     const rulesList = document.createElement('ol');
-    const rulesText = document.createElement('p');
     const nextBtn = document.createElement('button');
 
     const form = document.createElement('form');
@@ -96,7 +108,6 @@ function createRules(lang) {
     input.type = 'checkbox';
     policy.download = true;
 
-
     nextBtn.disabled = true;
 
     input.addEventListener('change', () => {
@@ -108,51 +119,34 @@ function createRules(lang) {
 
     // Пункты списка с правилами
 
-    let rulesItems = []
+
+    rules.forEach(el => {
+        const rulesItem = document.createElement('li');
+        rulesItem.textContent = el.text;
+        rulesItem.classList.add('rules__item');
+        rulesList.append(rulesItem);
+    })
+
 
     if (lang == 'ru') {
-        policy.href = 'files/Политика_в_отношении_обработки_персональных_данных.pdf';
+        policy.href = 'files/policy_ru.pdf';
         checkboxText.textContent = 'Я подтверждаю, что ознакомлен и согласен с правилами использования данного сервиса';
         policy.textContent = 'Политика конфиденциальности';
 
         title.textContent = 'Правила';
-        rulesText.textContent = 'Приглашаем вас отправиться к первой локации нашего захватывающего квеста!';
         nextBtn.textContent = 'Соглашаюсь';
 
-        rulesItems = [
-            'Задания могут появляться в разных локациях, связанных с историей артефакта.',
-            'Участники проходят через различные части города, решая загадки и выполняя задания, отображаемые на их телефоне.',
-            'Победителем становится человек, который первым соберёт все фрагменты карты артефакта и разгадает его местонахождение.'
-        ];
+
     } else {
-        policy.href = 'files/Privacy Policy.pdf';
+        policy.href = 'files/policy_en.pdf';
         checkboxText.textContent = 'I have read and agree to the privacy policy and service rules';
         policy.textContent = 'Privacy Policy';
 
         title.textContent = 'Rules';
-        rulesText.textContent = 'Приглашаем вас отправиться к первой локации нашего захватывающего квеста!';
         nextBtn.textContent = 'I Agree';
 
-        rulesItems = [
-            'Hello, World',
-            'Hello, World',
-            'Hello, World'
-        ];
     }
 
-
-
-
-    // Проходим по каждому элементу массива и создаем li
-
-    rulesItems.forEach(item => {
-        const rulesItem = document.createElement('li');
-        rulesItem.textContent = item;
-
-        rulesItem.classList.add('rules__item');
-
-        rulesList.append(rulesItem);
-    })
 
     document.body.classList.add('rules-body');
     section.classList.add('section');
@@ -168,15 +162,13 @@ function createRules(lang) {
     label.classList.add('rules__label');
 
 
-
-
     nextBtn.type = 'submit';
 
     main.append(section);
     section.append(container);
     container.append(form);
     label.append(input, checkbox, checkboxText);
-    formBlock.append(title, rulesList, rulesText, policy, label);
+    formBlock.append(title, rulesList, policy, label);
     form.append(formBlock, nextBtn);
 
 
@@ -187,29 +179,40 @@ function createRules(lang) {
 
         axios.get('php/get_question.php', {
             params: {
-              langCode: langCode,
+                langCode: localStorage.getItem('lang'),
             }
-          })
-          .then(function (response) {
-            console.log(response);
+        })
+        .then(function (response) {
             questions = response.data;
-          })
-          .catch(function (error) {
+
+            document.body.innerHTML = '';
+            document.body.classList.remove('rules-body');
+            document.body.append(createQuestion(countQuest, lang));
+    
+            createReadMoreBtn();
+        })
+        .catch(function (error) {
             console.log(error);
-          })
-          .finally(function () {
-            // always executed
-          });
+        });
 
-          console.log(questions)
+       
 
-        document.body.innerHTML = '';
-        document.body.classList.remove('rules-body');
-        document.body.append(createQuestion(countQuest, lang));
     })
 
     return main;
 
+}
+
+// Функция, которая будет запрашивать данные вопроса
+
+function getQuestion(num) {
+    let currentQuest = {}
+    questions.find((el, index) => {
+        if (el.id === num) {
+            currentQuest = el
+        }
+    })
+    return currentQuest
 }
 
 
@@ -221,17 +224,25 @@ function createQuestion(countQuest, lang) {
     const container = document.createElement('div');
     const containerSection = document.createElement('div');
     const num = document.createElement('p');
-    const text = document.createElement('p');
+    const textBlock = document.createElement('div');
+    const text = document.createElement('div');
     const title = document.createElement('h2');
+    const questionText = document.createElement('div');
+    const formBlock = document.createElement('div');
 
     // Создаем форму с полем ввода ответа и кнопкой Ответить
 
     const form = document.createElement('form');
     const label = document.createElement('label');
     const input = document.createElement('input');
+
     const submit = document.createElement('button');
 
     const clearButton = document.createElement('button');
+
+    const readMore = document.createElement('button');
+    readMore.classList.add('read-more', 'btn-reset');
+
 
     clearButton.innerHTML = `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -241,34 +252,38 @@ function createQuestion(countQuest, lang) {
     `
 
 
-
     // Вызываем функцию, в которой находятся данные вопроса
+
     const question = getQuestion(countQuest);
-    console.log(question)
 
     //      Если в массиве картинок больше 1 то делаем слайдшоу
 
-    if (question.images.length > 1) {
+    const imgCount = Object.values(question.image);
+
+    if (imgCount > '1') {
         const carousel = document.createElement('div');
         carousel.classList.add('f-carousel');
         carousel.id = 'myCarousel';
-        question.images.forEach(el => {
-            const carouselItem = document.createElement('div');
-            const img = document.createElement('img');
-            carouselItem.classList.add('f-carousel__slide');
+        for (let el in question.image) {
+            let value = question.image[el]
+            if (value.length) {
+                const carouselItem = document.createElement('div');
+                const img = document.createElement('img');
+                carouselItem.classList.add('f-carousel__slide');
 
-            carouselItem.setAttribute('data-fancybox', 'gallery');
-            carouselItem.setAttribute('data-src', el.path);
+                carouselItem.setAttribute('data-fancybox', 'gallery');
+                carouselItem.setAttribute('data-src', `cartoon/materials/${value}`);
 
-            img.src = el.path;
+                img.src = `cartoon/materials/${value}`;
 
-            carousel.append(carouselItem);
-            carouselItem.append(img);
-        });
+                carousel.append(carouselItem);
+                carouselItem.append(img);
+            }
 
+
+        }
         const options = {
-            infinite: false,
-            Dots: {
+            infinite: false, Dots: {
                 maxCount: 1,
             },
         };
@@ -278,46 +293,32 @@ function createQuestion(countQuest, lang) {
         });
 
         carousel.classList.add('question__media');
-        containerSection.append(carousel);
+        textBlock.append(carousel);
 
         new Carousel(carousel, options);
-
     }
+
 
     //      Если одна картинка в массиве то просто выводим ее
 
-    else if (question.images.length === 1) {
+    if (imgCount == '1') {
         const mediaBlock = document.createElement('div');
         const img = document.createElement('img');
-        img.src = question.images[0].path;
+        img.src = `cartoon/materials/${question.image.image1}`;
         mediaBlock.append(img);
         mediaBlock.classList.add('question__media');
-        containerSection.append(mediaBlock);
-    }
-
-    //      Есть ли в массиве видео
-
-
-    if (question.video.length) {
-        console.log(question.video[0].URL)
-        const videoBlock = document.createElement('div');
-        videoBlock.innerHTML = `
-            <iframe width="280" height="200" src="`+ question.video[0].URL + `"
-            title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen></iframe>
-            `
-
-        videoBlock.classList.add('video-block');
-        containerSection.append(videoBlock);
+        textBlock.append(mediaBlock);
     }
 
 
     if (lang == 'ru') {
         input.placeholder = 'Введите ответ';
         submit.textContent = 'Ответить';
+        readMore.textContent = 'Показать ещё';
     } else {
         input.placeholder = 'Enter your answer';
         submit.textContent = 'Send';
+        readMore.textContent = 'Show more';
     }
 
 
@@ -334,9 +335,13 @@ function createQuestion(countQuest, lang) {
     text.classList.add('question__text');
     label.classList.add('form__label');
     clearButton.classList.add('clear-btn', 'btn-reset');
+    textBlock.classList.add('question__content');
+    questionText.classList.add('question__block');
+    formBlock.classList.add('form__block');
 
     num.textContent = `${countQuest}/10`;
-    text.textContent = question.text;
+
+    text.innerHTML = question.text;
 
     title.textContent = question.title;
 
@@ -344,42 +349,71 @@ function createQuestion(countQuest, lang) {
     main.append(section);
     section.append(container);
     container.append(containerSection);
-    containerSection.prepend(num, title, text);
-    containerSection.append(form);
+    containerSection.prepend(num, textBlock);
     label.append(input, clearButton);
-    form.append(label, submit);
+    form.append(formBlock, submit);
+    textBlock.prepend(title, questionText);
+    questionText.append(text, readMore);
+    containerSection.append(form);
+    formBlock.append(label);
 
     //  Событие отправки формы
 
     form.addEventListener('submit', (e) => {
+        let validate = validationAnswerForm(input, formBlock, lang, clearButton)
         e.preventDefault();
 
-        console.log(response);
-        countQuest += 1;
-        console.log(input.value)
-        answer = input.value;
-        document.body.innerHTML = '';
-        document.body.classList.remove('question-body');
+        if (validate) {
+            axios({
+                method: 'post',
+                url: 'php/post_answer.php',
+                data: {
+                    paticipant_id: id,
+                    question_id: countQuest,
+                    text: input.value,
+                    langCode: lang,
+                }
+            })
+                .then(function (response) {
+                    if (response.data[0].status == 'неверно') {
+                        input.classList.add('form__input_incorrect');
+                        clearButton.classList.add('clear-btn--incorrect');
+                        if (!document.querySelector('.error')) {
+                            const error = document.createElement('p');
+                            error.textContent = 'Ответ неверный. Попробуйте еще раз';
+                            error.classList.add('error');
 
-        if (countQuest > 10) {
-            document.body.append(successWindow(lang));
+                            if (lang == 'ru') {
+                                error.textContent = 'Ответ неверный. Попробуйте еще раз';
+                            } else error.textContent = 'This answer is incorrect. Try again.';
 
-        } else document.body.append(createSuccess(countQuest, lang));
+                            formBlock.append(error);
 
-        // axios.post('/user', {
-        //     answer: answer,
-        // })
-        //     .then(function (response) {
-           
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
+                        } else {
+                            clearButton.classList.remove('clear-btn--incorrect');
+                        }
 
+                    } else {
+                        countQuest += 1;
+                        answer = input.value;
+                        document.body.innerHTML = '';
+                        document.body.classList.remove('question-body');
 
+                        if (countQuest > 10) document.body.append(successWindow(lang));
+                        else {
+
+                            document.body.append(createSuccess(countQuest, lang));
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {
+
+        }
 
     })
-
 
     // Очистка поля с ответом
 
@@ -390,8 +424,11 @@ function createQuestion(countQuest, lang) {
     clearButton.addEventListener('click', (e) => {
         e.preventDefault();
         input.value = '';
-        clearButton.classList.remove('active');
+        clearButton.classList.remove('active',);
+        input.classList.remove('form__input_incorrect')
     })
+
+
 
     return main;
 }
@@ -421,8 +458,6 @@ function createSuccess(countQuest, lang) {
     sectionImg.classList.add('success__img');
 
 
-    console.log(lang)
-
     if (lang == 'ru') {
         subtitle.textContent = `Ты молодец! Ответил правильно. Давай пойдём на задание ${countQuest}.`;
         nextBtn.textContent = 'Следующий вопрос';
@@ -430,9 +465,6 @@ function createSuccess(countQuest, lang) {
         subtitle.textContent = `Well done! That's correct. Let's move to Task ${countQuest}.`;
         nextBtn.textContent = 'Next task';
     }
-
-
-
 
 
     main.append(section);
@@ -447,6 +479,8 @@ function createSuccess(countQuest, lang) {
             document.body.innerHTML = '';
             document.body.classList.remove('success-body');
             document.body.append(createQuestion(countQuest, lang));
+
+            createReadMoreBtn();
         }
 
     })
@@ -455,140 +489,6 @@ function createSuccess(countQuest, lang) {
 
 }
 
-// Функция, которая будет запрашивать данные вопроса
-
-function getQuestion(num) {
-    let currentQuest = {};
-    console.log(questions)
-    questions.find((el, index) => {
-        if (el.id === num) {
-            currentQuest = el
-        }
-    })
-    return currentQuest
-
-}
-
-// const questDB = [
-//     {
-//         id: 1,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         video: [],
-//         answers: {}
-//     },
-//     {
-//         id: 2,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [],
-//         video: [
-//             { name: 'video1', URL: 'https://www.youtube.com/embed/qYvNv-I7zSo?si=Z4kUIvJ1rU7gUczg' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 3,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды?',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         video: [],
-//         answers: {}
-//     },
-//     {
-//         id: 4,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [],
-//         video: [
-//             { name: 'video4', URL: 'https://rutube.ru/play/embed/94807f2e850fae124f7aefa243c8de65' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 5,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 6,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 7,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 8,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 9,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         answers: {}
-//     },
-//     {
-//         id: 10,
-//         title: 'Заголовок',
-//         text: 'Кто из персонажей всегда ходит с молоточком и представляет собой неотъемлемую часть команды.',
-//         images: [
-//             { name: 'image1', path: 'img/image.jpg' },
-//             { name: 'image2', path: 'img/image.jpg' },
-//             { name: 'image3', path: 'img/image.jpg' },
-//             { name: 'image4', path: 'img/image.jpg' },
-//         ],
-//         answers: {}
-//     },
-// ]
 
 
 // Хидер с логтипами
@@ -645,7 +545,6 @@ function createHeader(lang) {
         <img src="img/logo3-desktop-en.svg">
         `
     }
-
 
 
     header.classList.add('header');
@@ -717,7 +616,6 @@ function createFooter(lang) {
     }
 
 
-
     footer.classList.add('footer');
     container.classList.add('container');
     footerContainer.classList.add('footer__container');
@@ -730,51 +628,259 @@ function createFooter(lang) {
 }
 
 
-// Экран авторизации
+// // Экран авторизации
 
-function createAuthorization() {
-    const header = createHeader(lang);
-    const footer = createFooter(lang);
+// function createAuthorization(lang) {
+//     const header = createHeader(lang);
+//     const footer = createFooter(lang);
+
+//     const main = document.createElement('main');
+//     const section = document.createElement('section');
+//     const container = document.createElement('div');
+
+//     const form = document.createElement('form');
+//     const title = document.createElement('h2');
+//     const label = document.createElement('label');
+//     const input = document.createElement('input');
+//     const submit = document.createElement('button');
+
+//     const signBlock = document.createElement('div');
+//     const sign = document.createElement('button');
+//     const errorBlock = document.createElement('div');
+
+//     document.body.classList.add('authorization-body');
+//     section.classList.add('authorization');
+//     container.classList.add('container');
+//     form.classList.add('authorization__form', 'form');
+//     input.classList.add('form__input', 'authorization__input');
+//     submit.classList.add('form__button', 'authorization__button', 'btn-reset');
+//     title.classList.add('title');
+//     signBlock.classList.add('sign');
+//     sign.classList.add('btn-reset', 'sign__btn');
+//     label.classList.add('registration__label');
+//     errorBlock.classList.add('error-block');
+
+//     if (lang == 'ru') {
+//         title.textContent = 'Вход';
+//         submit.textContent = 'Войти';
+//         input.placeholder = 'Введите свой номер';
+//     } else {
+//         title.textContent = 'Login';
+//         submit.textContent = 'Sign in';
+//         input.placeholder = 'Enter your telephone number';
+//     }
+
+
+
+//     document.body.append(header, main, footer);
+//     main.append(section);
+//     section.append(container);
+//     container.append(form);
+//     label.append(input);
+//     form.append(title, label, submit, signBlock, errorBlock);
+//     signBlock.append(sign);
+
+//     submit.addEventListener('click', (e) => {
+//         e.preventDefault();
+//         const validation = validationRegistrationForm(input, errorBlock, lang)
+
+
+
+//         if (validation) {
+
+//             phone = input.value.replace(/[- )(]/g, '');
+
+//             axios.all([
+//                 axios.get('php/get_question.php', {
+//                     params: {
+//                         langCode: lang,
+//                     }
+//                 }),
+//                 axios.post('php/post_paticipant.php', {
+//                     phone: phone, langCode: lang,
+//                 })
+
+//             ]).then(axios.spread(function (questionsData, participantData) {
+
+//                 questions = questionsData.data;
+
+//                 localStorage.setItem('phone', phone);
+//                 localStorage.setItem('lang', lang);
+
+//                 const language = participantData.data[0].lang.toLowerCase();
+//                 id = participantData.data[0].paticipant_id;
+//                 if (participantData.data[0].exist == 'yes') {
+
+//                     document.body.innerHTML = '';
+//                     document.body.classList.remove('registration-body');
+//                     if (participantData.data[0].question == '0') createRules(language)
+//                     else {
+//                         document.body.append(createQuestion(participantData.data[0].question + 1, language));
+//                         createReadMoreBtn();
+//                     }
+
+//                 } else {
+//                     alert('Пользователь с таким номер не зарегистрирован')
+//                 }
+
+//             }))
+
+//         }
+
+//         if (errorBlock.childNodes.length) errorBlock.classList.add('active');
+
+
+//     })
+
+// }
+
+
+// Экран с выбором языка
+
+function createLangPage(lang) {
+    let header = createHeader(lang);
+    let footer = createFooter(lang);
 
     const main = document.createElement('main');
     const section = document.createElement('section');
     const container = document.createElement('div');
 
     const form = document.createElement('form');
-    const title = document.createElement('h2');
-    const input = document.createElement('input');
+    const languageBlock = document.createElement('div');
+    const languageTitle = document.createElement('h2');
+    const labelBlock = document.createElement('div');
     const submit = document.createElement('button');
+    const errorBlock = document.createElement('div');
 
-    document.body.classList.add('authorization-body');
-    section.classList.add('authorization');
+    
+
+    const langs = [{
+        id: 1, code: 'ru', name: 'Русский', flag: 'img/rus.svg',
+    }, {
+        id: 2, code: 'en', name: 'English', flag: 'img/eng.svg',
+    }]
+
+    langs.forEach(item => {
+        const label = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.id = 'btn_lang'
+        radio.setAttribute('languages', item.code)
+        const flagImg = document.createElement('img');
+        const langName = document.createElement('span');
+        const imgBlock = document.createElement('div');
+
+        languageTitle.textContent = 'Для участия в Квесте выбери язык';
+        submit.textContent = 'Далее';
+      
+
+        label.classList.add('language');
+        radio.classList.add('language__input');
+
+        langName.textContent = item.name;
+        flagImg.src = item.flag;
+
+        radio.type = 'radio';
+        radio.name = 'lang';
+
+        languageTitle.classList.add('title');
+        languageBlock.classList.add('languages');
+        labelBlock.classList.add('languages__block');
+
+        langName.classList.add('language__name');
+        imgBlock.classList.add('language__img');
+        imgBlock.append(flagImg);
+
+    label.append(radio, imgBlock, langName);
+
+    labelBlock.append(label);
+
+        if (langCode == item.code) radio.checked = true;
+
+        // Переключение языка
+
+        radio.addEventListener('change', () => {          
+            if (document.querySelector('.error-lang')) document.querySelector('.error-lang').remove();
+            errorBlock.classList.remove('active');
+            langCode = item.code;
+            lang = item.code;
+            if (item.code == 'ru') {
+                header.remove();
+                footer.remove();
+                header = createHeader('ru');
+                footer = createFooter('ru');
+                document.body.prepend(header);
+                document.body.append(footer);
+                languageTitle.textContent = 'Для участия в Квесте выбери язык';
+                submit.textContent = 'Далее';
+
+                if (document.querySelector('.error-lang')) document.querySelector('.error-lang').textContent = 'Выберите свой язык';
+            } else {
+                header.remove();
+                footer.remove();
+                header = createHeader('en');
+                footer = createFooter('en');
+                document.body.prepend(header);
+                document.body.append(footer);
+                languageTitle.textContent = 'To start the quest, choose your language';
+                submit.textContent = 'Next';
+
+                if (document.querySelector('.error-lang')) document.querySelector('.error-lang').textContent = 'Сhoose your language';
+            }
+        })
+
+
+       
+    })
+
+
+     // Отправка формы
+
+
+     submit.addEventListener('click', (e) => {
+        e.preventDefault();
+        const langs = document.querySelectorAll('.language__input');
+        langs.forEach(el => {
+            if (el.checked) {          
+                document.body.innerHTML = '';               
+                createRegistration(lang);
+            } else {
+                if (!document.querySelector('.error-lang')) {
+                    const error = document.createElement('p');
+                    error.classList.add('error-lang');
+                    if (lang == 'ru') error.textContent = 'Выберите свой язык'
+                    else error.textContent = 'Сhoose your language'
+                    
+                    errorBlock.append(error);
+        
+                }
+            }
+        })
+
+
+        if (errorBlock.childNodes.length) errorBlock.classList.add('active');
+
+    })
+
+    document.body.classList.add('registration-body');
+    section.classList.add('registration');
     container.classList.add('container');
-    form.classList.add('authorization__form', 'form');
-    input.classList.add('form__input', 'authorization__input');
-    submit.classList.add('form__button', 'authorization__button', 'btn-reset');
-    title.classList.add('title');
+    form.classList.add('registration__form', 'form');
+    submit.classList.add('form__button', 'registration__button', 'btn-reset');
+    languageTitle.classList.add('title');
+    languageBlock.classList.add('languages');
+    labelBlock.classList.add('languages__block');
+    errorBlock.classList.add('error-block');
 
-    title.textContent = 'Вход';
-    submit.textContent = 'Войти';
-    input.placeholder = 'Введите свой номер';
+
 
     document.body.append(header, main, footer);
     main.append(section);
     section.append(container);
     container.append(form);
-    form.append(title, input, submit);
-
-    submit.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.body.innerHTML = '';
-        document.body.classList.remove('authorization-body');
-        if (confirm('Пользователь зарегистрирован?')) {
-            createMain();
-        } else {
-            createRegistration();
-        }
+    languageBlock.append(languageTitle, labelBlock);
 
 
-    })
+    form.append(languageBlock, submit, errorBlock);
 
 }
 
@@ -794,10 +900,10 @@ function createRegistration(lang) {
     const title = document.createElement('h2');
     const label = document.createElement('label');
     const input = document.createElement('input');
+    input.type = 'tel';
+    input.name = 'phone';
     const submit = document.createElement('button');
 
-    const languageBlock = document.createElement('div');
-    const languageTitle = document.createElement('h2');
     const labelBlock = document.createElement('div');
 
     const errorBlock = document.createElement('div');
@@ -811,100 +917,13 @@ function createRegistration(lang) {
     `
 
 
-    languageTitle.textContent = 'Сhoose your language';
-
-    const langs = [
-        {
-            id: 1,
-            code: 'ru',
-            name: 'Русский',
-            flag: 'img/rus.svg',
-        },
-        {
-            id: 2,
-            code: 'en',
-            name: 'English',
-            flag: 'img/eng.svg',
-        }
-    ]
-
-    langs.forEach(lang => {
-        const label = document.createElement('label');
-        const radio = document.createElement('input');
-        radio.id = 'btn_lang'
-        radio.setAttribute('languages', lang.code)
-        const flagImg = document.createElement('img');
-        const langName = document.createElement('span');
-        const imgBlock = document.createElement('div');
-
-        langName.textContent = lang.name;
-        flagImg.src = lang.flag;
-
-        radio.type = 'radio';
-        radio.name = 'lang';
-
-        if (langCode == lang.code) radio.checked = true;
-
-        radio.addEventListener('change', () => {
-            langCode = lang.code;
-            if (document.querySelector('.error-lang')) document.querySelector('.error-lang').remove();
-            console.log(document.querySelector('.error-block').children.length)
-            if (document.querySelector('.error-block').children.length == 0) {
-                document.querySelector('.error-block').classList.remove('active');
-            }
-            if (lang.code == 'ru') {
-                header.remove();
-                footer.remove();
-                header = createHeader('ru');
-                footer = createFooter('ru');
-                document.body.prepend(header);
-                document.body.append(footer);
-                title.textContent = 'Регистрация';
-                submit.textContent = 'Зарегистрироваться';
-                input.placeholder = 'Введите свой номер';
-
-                if (document.querySelector('.error-phone')) document.querySelector('.error-phone').textContent = 'Введите телефон';
-                if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').textContent = 'Введите корректный телефон';
-            }
-            else {
-                header.remove();
-                footer.remove();
-                header = createHeader('en');
-                footer = createFooter('en');
-                document.body.prepend(header);
-                document.body.append(footer);
-                title.textContent = 'Sign in';
-                submit.textContent = 'Sign in';
-                input.placeholder = 'Enter your telephone number';
-
-                if (document.querySelector('.error-phone')) document.querySelector('.error-phone').textContent = 'Enter a phone number';
-                if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').textContent = 'Enter a correct phone number';
-            }
-        })
-
-
-
-        label.classList.add('language');
-        radio.classList.add('language__input');
-        langName.classList.add('language__name');
-        imgBlock.classList.add('language__img');
-        imgBlock.append(flagImg);
-
-        label.append(radio, imgBlock, langName);
-
-        labelBlock.append(label);
-    })
-
     document.body.classList.add('registration-body');
     section.classList.add('registration');
     container.classList.add('container');
     form.classList.add('registration__form', 'form');
     input.classList.add('form__input', 'registration__input');
-    input.id = 'phone'
     submit.classList.add('form__button', 'registration__button', 'btn-reset');
     title.classList.add('title');
-    languageTitle.classList.add('title');
-    languageBlock.classList.add('languages');
     labelBlock.classList.add('languages__block');
     errorBlock.classList.add('error-block');
     label.classList.add('registration__label');
@@ -912,18 +931,15 @@ function createRegistration(lang) {
 
 
 
-
     if (lang == 'ru') {
-
-        title.textContent = 'Регистрация';
-        submit.textContent = 'Зарегистрироваться';
+        title.textContent = 'Укажи свой номер телефона';
+        submit.textContent = 'Войти';
         input.placeholder = 'Введите свой номер';
-    }
-    else {
 
-        title.textContent = 'Sign in';
+    } else {
+        title.textContent = 'Enter your phone number';
         submit.textContent = 'Sign in';
-        input.placeholder = 'Enter your telephone number';
+        input.placeholder = 'Enter your phone number';
     }
 
 
@@ -931,37 +947,62 @@ function createRegistration(lang) {
     main.append(section);
     section.append(container);
     container.append(form);
-    languageBlock.append(languageTitle, labelBlock);
     label.append(input, clearButton);
-    form.append(languageBlock, title, label, submit, errorBlock);
+    form.append(title, label, submit, errorBlock);
+
+
+   
+
+
+    // Отправка формы
 
 
     submit.addEventListener('click', (e) => {
         e.preventDefault();
-        const countryData = iti.getSelectedCountryData();
-        const validation = validationRegistrationForm(input, errorBlock, countryData, langCode);
+        const validation = validationRegistrationForm(input, errorBlock, lang, clearButton)
 
         if (validation) {
+            errorBlock.classList.remove('active');
             phone = input.value.replace(/[- )(]/g, '');
-            axios.post('php/post_paticipant.php', {
-                phone: phone,
-                langCode: langCode,
-              })
-              .then(function (response) {
-                console.log(response);
-               
-                console.log(phone)
-                document.body.innerHTML = '';
-                document.body.classList.remove('registration-body');
-    
-                createMain(lang);
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
 
-           
-        }
+            axios.all([
+                axios.get('php/get_question.php', {
+                    params: {
+                        langCode: lang,
+                    }
+                }),
+                axios.post('php/post_paticipant.php', {
+                    phone: phone, langCode: lang,
+                })
+
+            ]).then(axios.spread(function (questionsData, participantData) {
+                questions = questionsData.data;
+
+                localStorage.setItem('phone', phone);
+                localStorage.setItem('lang', lang);
+
+
+                const language = participantData.data[0].lang.toLowerCase();
+                id = participantData.data[0].paticipant_id;
+                if (participantData.data[0].exist == 'yes') {
+
+                    document.body.innerHTML = '';
+                    document.body.classList.remove('registration-body');
+                    if (participantData.data[0].question == 0) createMain(lang);
+                    else {
+                        document.body.append(createQuestion(participantData.data[0].question + 1, language));
+                        createReadMoreBtn();
+                    }
+
+                } else {
+                    document.body.innerHTML = '';
+                    document.body.classList.remove('registration-body');
+                    createMain(lang);
+                }
+
+            }))
+
+        } 
 
         if (errorBlock.childNodes.length) errorBlock.classList.add('active');
     })
@@ -978,17 +1019,9 @@ function createRegistration(lang) {
     })
 
 
-    // Маска на телефон
-
-    window.intlTelInput(input, {
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.19/build/js/utils.js",
-    });
-
-    const iti = intlTelInput(input);
-    iti.setCountry("ru");
-
-
     input.addEventListener('input', () => {
+        if (input.classList.contains('form__input_incorrect')) input.classList.remove('form__input_incorrect');
+        if (clearButton.classList.contains('clear-btn--incorrect')) clearButton.classList.remove('clear-btn--incorrect');
         clearButton.classList.add('active');
     })
 
@@ -1001,6 +1034,13 @@ function createRegistration(lang) {
         clearButton.classList.remove('active');
     })
 
+    if (!input.value) input.value = '+';
+
+    setMask(input);
+
+    input.addEventListener('input', () => {
+        setMask(input);
+    });
 
 }
 
@@ -1019,12 +1059,10 @@ function successWindow(lang) {
     const license = document.createElement('span');
 
 
-
     const sectionImg = document.createElement('img');
     historyBtn.href = 'https://souzmult.ru/about';
 
     let questSuccess = false
-
 
 
     if (lang == 'ru') {
@@ -1038,7 +1076,6 @@ function successWindow(lang) {
         giftBtn.textContent = 'How to get a prize';
         historyBtn.textContent = 'History facts about russian animation';
     }
-
 
 
     document.body.classList.add('success-window');
@@ -1082,12 +1119,11 @@ function createInstructions(lang) {
 
     if (lang == 'ru') {
         title.textContent = 'Как получить приз';
-        text.textContent = 'Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления. Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления.';
+        text.textContent = 'Приз можно получить в зоне 8 - сады у взлетной полосы на пространстве "Союзмультфильм". Спасибо за участие!';
     } else {
         title.textContent = 'How to get a prize';
-        text.textContent = 'Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления. Есть над чем задуматься: явные признаки победы институционализации призывают нас к новым свершениям, которые, в свою очередь, должны быть ограничены исключительно образом мышления.';
+        text.textContent = 'prizee';
     }
-
 
 
     modal.classList.add('modal');
@@ -1110,117 +1146,217 @@ function createInstructions(lang) {
 }
 
 
-function validationRegistrationForm(input, container, country, lang) {
-    const inputEl = document.querySelector("#phone");
-    console.log(lang)
+function validationRegistrationForm(input, container, lang, clear) {
 
-
-    const iti = window.intlTelInput(inputEl, {
-        initialCountry: country.iso2,
-        utilsScript: "/intl-tel-input/js/utils.js?1707906286003"
-    });
     const radioInputs = document.querySelectorAll(`[name = "lang"]`);
-    // const errorMap = ["Не верно введен номер"];
-    // const errorMsg = document.createElement("span")
-    // errorMsg.id = 'error-msg';
-    // const validMsg = document.createElement('span')
-    // validMsg.id = "valid-msg";
-
-
-
 
     // Проверка, введено ли поле с номером телефона
 
-    if (input.value == '') {
+    if (input.value == '+') {
         if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').remove();
         if (!document.querySelector('.error-phone')) {
+            input.classList.add('form__input_incorrect');
+            
             const error = document.createElement('p');
-            error.classList.add('error-phone');
             error.textContent = 'Введите телефон';
+            error.classList.add('error-phone');
+
+            if (lang == 'ru') {
+                error.textContent = 'Введите телефон';
+            } else error.textContent = 'Enter your phone number';
+
             container.append(error);
 
         }
 
-        return false;
-
-    } else if (iti.isValidNumber() == false) {
-
-        if (document.querySelector('.error-phone')) document.querySelector('.error-phone').remove();
-        if (!document.querySelector('.error-uncorrect')) {
-            const error = document.createElement('p');
-            error.classList.add('error-uncorrect');
-
-            error.textContent = 'Введите корректный телефон';
-
-            container.append(error);
-        }
-
-
-        return false;
-    }
-
-
-    else {
-        if (document.querySelector('.error-phone')) document.querySelector('.error-phone').remove();
-        if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').remove();
-    }
-
-    // Проверка, выбран ли язык
-
-    if (radioInputs[0].checked !== true && radioInputs[1].checked !== true) {
-        if (!document.querySelector('.error-lang')) {
-            const error = document.createElement('p');
-            error.classList.add('error-lang');
-            error.textContent = 'Выберите свой язык';
-            container.append(error);
-
-        }
         return false;
 
     } else {
-        if (document.querySelector('.error-lang')) document.querySelector('.error-lang').remove();
+        const valid = setMask(input);
+        if (!valid) {
+            if (document.querySelector('.error-phone')) document.querySelector('.error-phone').remove();
+            clear.classList.add('clear-btn--incorrect');
+            input.classList.add('form__input_incorrect');
+            const error = document.createElement('p');
+            error.textContent = 'Введите правильный номер телефона';
+            error.classList.add('error-phone');
+
+            if (lang == 'ru') {
+                error.textContent = 'Введите правильный номер телефона';
+            } else error.textContent = 'Enter a correct phone number';
+
+            container.append(error);
+            return false
+        }
     }
 
-    // Проверка по количеству символов согласно выбранной стране,
-
-    // const reset = () => {
-    //     input.classList.remove("error");
-    //     errorMsg.textContent = "";
-    //     errorMsg.classList.add("hide");
-    //     validMsg.classList.add("hide");
-    //     container.append(errorMsg);
-    // };
-
-    // reset()
-    // if (input.value.trim()) {
-    //     console.log(input.value.length)
-    //     if (iti.isValidNumber()) {
-    //         validMsg.classList.remove("hide");
-    //         validMsg.textContent = '✓ Valid'
-    //         container.append(validMsg)
-    //         return true
-    //     } else if (country.iso2 === 'ru' && input.value.length === 9) {
-    //         validMsg.classList.remove("hide");
-    //         validMsg.textContent = '✓ Valid'
-    //         container.append(validMsg)
-
-    //         return true
-    //     } else {
-    //         input.classList.add("error");
-    //         const errorCode = iti.getValidationError();
-    //         errorMsg.textContent = errorMap[errorCode] || "Не верно введен номер";
-    //         errorMsg.classList.remove("hide");
-    //         container.append(errorMsg);
-
-    //         return false
-    //     }
-    // }
+    if (document.querySelector('.error-phone')) document.querySelector('.error-phone').remove();
+    if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').remove();
 
 
     return true;
 }
 
+// Ф-ия валидаии ввода ответа
 
 
-createRegistration('ru')
+function validationAnswerForm(input, container, lang, clearButton) {
+
+    input.addEventListener('input', () => {
+        if (clearButton.classList.contains('clear-btn--incorrect')) clearButton.classList.remove('clear-btn--incorrect');
+
+        input.classList.remove('form__input_incorrect');
+        if (document.querySelector('.error')) document.querySelector('.error').remove();
+    })
+
+    // Проверка, введено ли поле с ответом
+
+    if (input.value == '') {
+        input.classList.add('form__input_incorrect');
+        if (!document.querySelector('.error')) {
+            const error = document.createElement('p');
+            error.textContent = 'Введите ответ';
+            error.classList.add('error');
+
+            if (lang == 'ru') {
+                error.textContent = 'Введите ответ';
+            } else error.textContent = 'Enter your answer';
+
+            container.append(error);
+
+        }
+
+        return false;
+
+    } else {
+        input.classList.remove('form__input_incorrect');
+        if (document.querySelector('.error')) document.querySelector('.error').remove();
+    }
+
+
+    return true;
+}
+
+function createReadMoreBtn() {
+    const readMore = document.querySelector('.read-more');
+    const text = document.querySelector('.question__text');
+
+    if (text.clientHeight >= 102) {
+        readMore.classList.add('active');
+
+        readMore.addEventListener('click', (e) => {
+            e.preventDefault();
+            text.classList.add('question__text--more');
+            readMore.classList.remove('active');
+        })
+    }
+}
+
+let phoneNumber;
+let valid;
+
+function setMask(input) {
+    let matrix = '+###############';
+
+    maskList.forEach(item => {
+        let code = item.code.replace(/[\s#]/g, ''),
+            phone = input.value.replace(/[\s#-)(]/g, '');
+
+        if (phone.includes(code)) {
+            matrix = item.code;
+            phoneNumber = item.code.replace(/[- +)(]/g, '');
+        }
+    });
+
+
+
+    let i = 0,
+        val = input.value.replace(/\D/g, '');
+
+    input.value = matrix.replace(/(?!\+)./g, function (a) {
+        return /[#\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? '' : a;
+    });
+
+
+    if (!phoneNumber) valid = false
+    else {
+        if (input.value.replace(/[- +)(]/g, '').length < phoneNumber.length) valid = false
+        else valid = true;
+    }
+
+
+    return valid;
+
+}
+
+
+createLangPage('ru')
+
+
+
+
+if (localStorage.getItem('phone') && localStorage.getItem('lang')) {
+    axios.all([
+        axios.get('php/get_question.php', {
+            params: {
+                langCode: localStorage.getItem('lang'),
+            }
+        }),
+        axios.post('php/post_paticipant.php', {
+            phone: localStorage.getItem('phone'), langCode: localStorage.getItem('lang'),
+        })
+
+    ]).then(axios.spread(function (questionsData, participantData) {
+        questions = questionsData.data;
+
+        id = participantData.data[0].paticipant_id;
+        document.body.innerHTML = '';
+        document.body.classList.remove('registration-body');
+        if (participantData.data[0].question == '0') createMain(localStorage.getItem('lang'))
+        else {
+            document.body.append(createQuestion(participantData.data[0].question + 1, localStorage.getItem('lang')));
+            setTimeout(() => {
+                createReadMoreBtn();
+            }, 100)
+
+        }
+
+    }))
+
+} else {
+    document.body.innerHTML = '';
+    createLangPage('ru');
+} 
+
+
+
+const url = window.location.href;
+
+if (url.includes('?code=')) {
+    const length = url.length;
+    const code = url.substr(length - 6, length);
+
+    axios.get('php/check_paticipant.php', {
+        params: {
+            code: code
+        }
+    })
+    .then(function (response) {
+        const lang = response.data[0].lang.toLowerCase();
+        document.body.classList.remove('registration-body');
+        document.body.innerHTML = '';
+
+        localStorage.setItem('phone', response.data[0].paticipant_phone);
+        localStorage.setItem('lang', lang);
+
+        createMain(lang);
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+
+}
+
+
+
 
