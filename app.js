@@ -105,6 +105,8 @@ function createRules(lang) {
     const checkbox = document.createElement('span');
     const checkboxText = document.createElement('span');
 
+    const rulesContent = document.createElement('div');
+
     input.type = 'checkbox';
     policy.download = true;
 
@@ -122,7 +124,7 @@ function createRules(lang) {
 
     rules.forEach(el => {
         const rulesItem = document.createElement('li');
-        rulesItem.textContent = el.text;
+        rulesItem.innerHTML = el.text;
         rulesItem.classList.add('rules__item');
         rulesList.append(rulesItem);
     })
@@ -160,6 +162,11 @@ function createRules(lang) {
     policy.classList.add('rules__policy');
     checkbox.classList.add('rules__checkbox');
     label.classList.add('rules__label');
+    rulesContent.classList.add('rules__content');
+
+
+    rulesContent.setAttribute('data-simplebar','')
+    rulesContent.setAttribute('data-simplebar-auto-hide',"false")
 
 
     nextBtn.type = 'submit';
@@ -168,8 +175,9 @@ function createRules(lang) {
     section.append(container);
     container.append(form);
     label.append(input, checkbox, checkboxText);
+    rulesContent.append(formBlock);
     formBlock.append(title, rulesList, policy, label);
-    form.append(formBlock, nextBtn);
+    form.append(rulesContent, nextBtn);
 
 
     // Событие при клике на Далее
@@ -188,14 +196,15 @@ function createRules(lang) {
             document.body.innerHTML = '';
             document.body.classList.remove('rules-body');
             document.body.append(createQuestion(countQuest, lang));
-    
-            createReadMoreBtn();
+
+
+
+           /* createReadMoreBtn();*/
         })
         .catch(function (error) {
             console.log(error);
         });
 
-       
 
     })
 
@@ -236,12 +245,14 @@ function createQuestion(countQuest, lang) {
     const label = document.createElement('label');
     const input = document.createElement('input');
 
+    input.type = 'text';
+
     const submit = document.createElement('button');
 
     const clearButton = document.createElement('button');
 
-    const readMore = document.createElement('button');
-    readMore.classList.add('read-more', 'btn-reset');
+ /*   const readMore = document.createElement('button');
+    readMore.classList.add('read-more', 'btn-reset');*/
 
 
     clearButton.innerHTML = `
@@ -261,6 +272,7 @@ function createQuestion(countQuest, lang) {
     const imgCount = Object.values(question.image);
 
     if (imgCount > '1') {
+        questionText.classList.add('question__block--open');
         const carousel = document.createElement('div');
         carousel.classList.add('f-carousel');
         carousel.id = 'myCarousel';
@@ -299,26 +311,27 @@ function createQuestion(countQuest, lang) {
     }
 
 
-    //      Если одна картинка в массиве то просто выводим ее
+    // //      Если одна картинка в массиве то просто выводим ее
 
-    if (imgCount == '1') {
-        const mediaBlock = document.createElement('div');
-        const img = document.createElement('img');
-        img.src = `cartoon/materials/${question.image.image1}`;
-        mediaBlock.append(img);
-        mediaBlock.classList.add('question__media');
-        textBlock.append(mediaBlock);
-    }
+    // if (imgCount == '1') {
+    //     questionText.classList.add('question__block--open');
+    //     const mediaBlock = document.createElement('div');
+    //     const img = document.createElement('img');
+    //     img.src = `cartoon/materials/${question.image.image1}`;
+    //     mediaBlock.append(img);
+    //     mediaBlock.classList.add('question__media');
+    //     textBlock.append(mediaBlock);
+    // }
 
 
     if (lang == 'ru') {
         input.placeholder = 'Введите ответ';
         submit.textContent = 'Ответить';
-        readMore.textContent = 'Показать ещё';
+      /*  readMore.textContent = 'Показать ещё';*/
     } else {
         input.placeholder = 'Enter your answer';
         submit.textContent = 'Send';
-        readMore.textContent = 'Show more';
+      /*  readMore.textContent = 'Show more';*/
     }
 
 
@@ -337,6 +350,11 @@ function createQuestion(countQuest, lang) {
     clearButton.classList.add('clear-btn', 'btn-reset');
     textBlock.classList.add('question__content');
     questionText.classList.add('question__block');
+
+
+    textBlock.setAttribute('data-simplebar', '')
+    textBlock.setAttribute('data-simplebar-auto-hide',"false")
+
     formBlock.classList.add('form__block');
 
     num.textContent = `${countQuest}/10`;
@@ -353,13 +371,17 @@ function createQuestion(countQuest, lang) {
     label.append(input, clearButton);
     form.append(formBlock, submit);
     textBlock.prepend(title, questionText);
-    questionText.append(text, readMore);
-    containerSection.append(form);
+    textBlock.append(form);
+
+    /*questionText.append(text, readMore);*/
+    questionText.append(text);
+    // containerSection.append(form);
     formBlock.append(label);
 
     //  Событие отправки формы
 
     form.addEventListener('submit', (e) => {
+
         let validate = validationAnswerForm(input, formBlock, lang, clearButton)
         e.preventDefault();
 
@@ -480,7 +502,7 @@ function createSuccess(countQuest, lang) {
             document.body.classList.remove('success-body');
             document.body.append(createQuestion(countQuest, lang));
 
-            createReadMoreBtn();
+            /*createReadMoreBtn();*/
         }
 
     })
@@ -752,7 +774,7 @@ function createLangPage(lang) {
     const submit = document.createElement('button');
     const errorBlock = document.createElement('div');
 
-    
+
 
     const langs = [{
         id: 1, code: 'ru', name: 'Русский', flag: 'img/rus.svg',
@@ -771,7 +793,7 @@ function createLangPage(lang) {
 
         languageTitle.textContent = 'Для участия в Квесте выбери язык';
         submit.textContent = 'Далее';
-      
+
 
         label.classList.add('language');
         radio.classList.add('language__input');
@@ -798,7 +820,7 @@ function createLangPage(lang) {
 
         // Переключение языка
 
-        radio.addEventListener('change', () => {          
+        radio.addEventListener('change', () => {
             if (document.querySelector('.error-lang')) document.querySelector('.error-lang').remove();
             errorBlock.classList.remove('active');
             langCode = item.code;
@@ -829,7 +851,7 @@ function createLangPage(lang) {
         })
 
 
-       
+
     })
 
 
@@ -840,8 +862,8 @@ function createLangPage(lang) {
         e.preventDefault();
         const langs = document.querySelectorAll('.language__input');
         langs.forEach(el => {
-            if (el.checked) {          
-                document.body.innerHTML = '';               
+            if (el.checked) {
+                document.body.innerHTML = '';
                 createRegistration(lang);
             } else {
                 if (!document.querySelector('.error-lang')) {
@@ -849,9 +871,9 @@ function createLangPage(lang) {
                     error.classList.add('error-lang');
                     if (lang == 'ru') error.textContent = 'Выберите свой язык'
                     else error.textContent = 'Сhoose your language'
-                    
+
                     errorBlock.append(error);
-        
+
                 }
             }
         })
@@ -951,7 +973,7 @@ function createRegistration(lang) {
     form.append(title, label, submit, errorBlock);
 
 
-   
+
 
 
     // Отправка формы
@@ -981,6 +1003,7 @@ function createRegistration(lang) {
                 localStorage.setItem('phone', phone);
                 localStorage.setItem('lang', lang);
 
+                console.log(participantData.data[0].question)
 
                 const language = participantData.data[0].lang.toLowerCase();
                 id = participantData.data[0].paticipant_id;
@@ -988,10 +1011,13 @@ function createRegistration(lang) {
 
                     document.body.innerHTML = '';
                     document.body.classList.remove('registration-body');
-                    if (participantData.data[0].question == 0) createMain(lang);
+                    if (participantData.data[0].question == 0) createMain(lang)
+                    else
+                    if (participantData.data[0].question == 10) document.body.append(successWindow(lang))
+
                     else {
                         document.body.append(createQuestion(participantData.data[0].question + 1, language));
-                        createReadMoreBtn();
+                       /* createReadMoreBtn();*/
                     }
 
                 } else {
@@ -1002,7 +1028,7 @@ function createRegistration(lang) {
 
             }))
 
-        } 
+        }
 
         if (errorBlock.childNodes.length) errorBlock.classList.add('active');
     })
@@ -1096,6 +1122,7 @@ function successWindow(lang) {
 
     giftBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        document.body.innerHTML = '';
         const modal = createInstructions(lang);
         document.body.append(modal);
     })
@@ -1122,7 +1149,7 @@ function createInstructions(lang) {
         text.textContent = 'Приз можно получить в зоне 8 - сады у взлетной полосы на пространстве "Союзмультфильм". Спасибо за участие!';
     } else {
         title.textContent = 'How to get a prize';
-        text.textContent = 'prizee';
+        text.textContent = 'The prize can be received in zone 8 - Gardens by the Runway in the Soyuzmultfilm space. Thank you for your participation!';
     }
 
 
@@ -1140,6 +1167,8 @@ function createInstructions(lang) {
     closeBtn.addEventListener('click', (e) => {
         e.preventDefault();
         modal.remove();
+        document.body.append(successWindow(lang));
+
     })
 
     return modal;
@@ -1156,7 +1185,7 @@ function validationRegistrationForm(input, container, lang, clear) {
         if (document.querySelector('.error-uncorrect')) document.querySelector('.error-uncorrect').remove();
         if (!document.querySelector('.error-phone')) {
             input.classList.add('form__input_incorrect');
-            
+
             const error = document.createElement('p');
             error.textContent = 'Введите телефон';
             error.classList.add('error-phone');
@@ -1237,11 +1266,13 @@ function validationAnswerForm(input, container, lang, clearButton) {
     return true;
 }
 
-function createReadMoreBtn() {
+/*function createReadMoreBtn() {
     const readMore = document.querySelector('.read-more');
     const text = document.querySelector('.question__text');
 
-    if (text.clientHeight >= 102) {
+    console.log(text.offsetHeight)
+
+    if ($(text).height() >= 120) {
         readMore.classList.add('active');
 
         readMore.addEventListener('click', (e) => {
@@ -1250,7 +1281,32 @@ function createReadMoreBtn() {
             readMore.classList.remove('active');
         })
     }
-}
+}*/
+
+
+/* ---------------------- Maxim -----------------------------*/
+/*
+
+// Попробовать scrollHeight!!!!!!!
+
+function createReadMoreBtn() {
+    const readMore = document.querySelector('.read-more');
+    const text = document.querySelector('.question__text');
+
+    console.log(text.scrollHeight); // Используем scrollHeight вместо height
+
+    if (text.scrollHeight >= 120) {
+        readMore.classList.add('active');
+
+        readMore.addEventListener('click', (e) => {
+            e.preventDefault();
+            text.classList.add('question__text--more');
+            readMore.classList.remove('active');
+        })
+    }
+}*/
+
+
 
 let phoneNumber;
 let valid;
@@ -1290,9 +1346,37 @@ function setMask(input) {
 }
 
 
+
 createLangPage('ru')
 
+const url = window.location.href;
 
+if (url.includes('?code=')) {
+    const length = url.length;
+    const code = url.substr(length - 6, length);
+
+    axios.get('php/check_paticipant.php', {
+        params: {
+            code: code
+        }
+    })
+    .then(function (response) {
+        console.log(response.data)
+        const lang = response.data[0].lang.toLowerCase();
+        
+        document.body.innerHTML = '';
+        document.body.classList.remove('registration-body');
+        document.body.classList.remove('question-body');
+        localStorage.setItem('phone', response.data[0].paticipant_phone);
+        localStorage.setItem('lang', lang);
+        
+        createMain(lang);
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+
+}
 
 
 if (localStorage.getItem('phone') && localStorage.getItem('lang')) {
@@ -1307,17 +1391,21 @@ if (localStorage.getItem('phone') && localStorage.getItem('lang')) {
         })
 
     ]).then(axios.spread(function (questionsData, participantData) {
+        
         questions = questionsData.data;
 
         id = participantData.data[0].paticipant_id;
         document.body.innerHTML = '';
         document.body.classList.remove('registration-body');
-        if (participantData.data[0].question == '0') createMain(localStorage.getItem('lang'))
+        document.body.classList.remove('question-body');
+        if (participantData.data[0].question == '0') {
+            createMain(localStorage.getItem('lang'));
+        } 
+        else
+        if (participantData.data[0].question == 10) document.body.append(successWindow(localStorage.getItem('lang')))
         else {
+            document.body.classList.remove('start-body');
             document.body.append(createQuestion(participantData.data[0].question + 1, localStorage.getItem('lang')));
-            setTimeout(() => {
-                createReadMoreBtn();
-            }, 100)
 
         }
 
@@ -1326,36 +1414,11 @@ if (localStorage.getItem('phone') && localStorage.getItem('lang')) {
 } else {
     document.body.innerHTML = '';
     createLangPage('ru');
-} 
-
-
-
-const url = window.location.href;
-
-if (url.includes('?code=')) {
-    const length = url.length;
-    const code = url.substr(length - 6, length);
-
-    axios.get('php/check_paticipant.php', {
-        params: {
-            code: code
-        }
-    })
-    .then(function (response) {
-        const lang = response.data[0].lang.toLowerCase();
-        document.body.classList.remove('registration-body');
-        document.body.innerHTML = '';
-
-        localStorage.setItem('phone', response.data[0].paticipant_phone);
-        localStorage.setItem('lang', lang);
-
-        createMain(lang);
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
-
 }
+
+
+
+
 
 
 
